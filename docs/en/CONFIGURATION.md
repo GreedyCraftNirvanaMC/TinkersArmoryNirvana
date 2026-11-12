@@ -30,7 +30,7 @@ Disabling leveling stops XP gains and excludes its bonus slots from recalculatio
 | --- | --- | --- |
 | `compactView` | `false` | Hide the armor preview mannequin beside the station interface |
 
-The accessory-menu key is a normal Minecraft keybinding, **G** by default, and is edited in Controls rather than TOML. Traveller toggles are stored independently on each armor item. Storage accessories and toggle accessories require the item to be equipped and unbroken.
+Accessory keys are normal Minecraft bindings: **G** for helmet, **H** for chestplate and **J** for leggings. Edit them separately in Controls rather than TOML. They directly operate the installed accessory. Traveller toggles are stored independently on each armor item. Storage accessories and toggle accessories require the item to be equipped and unbroken.
 
 ## Shared material and smeltery settings
 

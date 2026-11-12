@@ -35,5 +35,6 @@ public class TinkersArmoryNirvana {
         com.gctn.tinkersarmorynirvana.armor.BuiltinTraits.initialize();
         com.gctn.tinkersarmorynirvana.armor.BuiltinModifiers.initialize();
         com.gctn.tinkersarmorynirvana.armor.BuiltinMaterials.initialize();
+        com.gctn.tinkersarmorynirvana.armor.ArmoryNativeParts.initialize();
     }
 }

@@ -72,13 +72,18 @@ def main(tinkers):
     required = set()
     for path in java.rglob("*.java"):
         required.update(key for key in re.findall(r'Component\.translatable\("([^"]+)"', path.read_text(encoding="utf-8"))
-                        if not key.endswith(".") and key != "book.conarm.intro" and key.startswith(("item.conarm.", "gui.conarm.", "tooltip.conarm.", "message.conarm.", "book.conarm.")))
+                        if not key.endswith(".") and key != "book.conarm.intro" and key.startswith(("item.conarm.", "gui.", "stat.", "tooltip.conarm.", "message.conarm.", "book.conarm.", "modifier.")))
     required.update(f"book.conarm.intro{index}" for index in range(1, 6))
     for path in (java / "client").glob("ArmoryBook*.java"):
         required.update("book.conarm." + key for key in re.findall(r'\btext\("([^"]+)"', path.read_text(encoding="utf-8")) if not key.endswith("."))
     required.update("book.conarm.section." + section for section in ["welcome", "armory", "materials", "traits", "modifiers", "accessories"])
     required.update("book.conarm.part." + part for part in ["core", "plates", "trim"])
     required.update("book.conarm." + key for key in ["previous", "next", "contents", "back", "open"])
+    required.update("stat." + role + ".name" for role in ["core", "plates", "trim"])
+    for stat in ["core.durability", "core.defense", "plates.modifier", "plates.durability", "plates.toughness", "trim.durability"]:
+        required.update("stat." + stat + suffix for suffix in [".name", ".desc"])
+    required.update("item.conarm." + armor + ".desc" for armor in ["helmet", "chestplate", "leggings", "boots"])
+    required.update("key.conarm." + key for key in ["toggle_helm.desc", "toggle_chest.desc", "toggle_leg.desc", "category"])
     traits_source = (java / "armor/BuiltinTraits.java").read_text(encoding="utf-8")
     modifiers_source = (java / "armor/BuiltinModifiers.java").read_text(encoding="utf-8")
     traits = set(re.findall(r'trait\("([a-z_]+)"\)', traits_source)) | {"slimey_green", "slimey_blue"}
@@ -94,6 +99,17 @@ def main(tinkers):
             for key in sorted(required):
                 if key.startswith(("trait.", "modifier.")) and key in data and not re.search(r"[\u4e00-\u9fff]", data[key]):
                     failures.append(f"{lang}: untranslated builtin {key} = {data[key]}")
+        language = (RES / f"assets/conarm/book/{lang}/language.lang").read_text(encoding="utf-8")
+        labels = {line.split("=", 1)[0] for line in language.splitlines() if "=" in line}
+        for label in ["welcome", "armory", "materials", "modifiers", "accessories", "armor.title", "armor.properties", "modifier.effect"]:
+            if label not in labels:
+                failures.append(f"{lang}: missing original book label {label}")
+    sounds = json.loads((RES / "assets/conarm/sounds.json").read_text(encoding="utf-8"))
+    for sound in sounds.values():
+        for entry in sound["sounds"]:
+            namespace, name = entry.split(":", 1)
+            if namespace == "conarm" and not (RES / f"assets/conarm/sounds/{name}.ogg").is_file():
+                failures.append(f"Missing original workshop sound: {entry}")
     print(f"Parsed {count} JSON resources; checked textures, parents, recipes and {len(required)} translation keys in two languages.")
     if failures:
         print("\n".join(failures))

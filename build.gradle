@@ -18,7 +18,7 @@ repositories {
 
 // 本地依赖由用户提供源码构建，不嵌入运行 JAR，也不在仓库保存第三方二进制。
 def tinkersJar = providers.gradleProperty('tinkersNirvanaJar')
-        .orElse('../TinkersNirvana-1.21.1/build/libs/TinkersNirvana-1.21.1-1.0.1.jar')
+        .orElse('../TinkersNirvana-1.21.1/build/libs/TinkersNirvana-1.21.1-1.0.2.jar')
 if (!file(tinkersJar.get()).isFile()) {
     throw new GradleException('Build TinkersNirvana first and supply -PtinkersNirvanaJar=/absolute/path/to/TinkersNirvana.jar')
 }

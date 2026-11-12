@@ -29,6 +29,13 @@ public final class ArmoryNetwork {
         registrar.playToServer(Name.TYPE, Name.STREAM, (payload, context) -> context.enqueueWork(() -> {
             if (context.player().containerMenu instanceof ArmoryMenu menu && menu.containerId == payload.container && menu.stillValid(context.player())) { menu.rename(payload.name); }
         }));
+        registrar.playToServer(BookPage.TYPE, BookPage.STREAM, (payload, context) -> context.enqueueWork(() -> {
+            var player = context.player();
+            int currentSlot = payload.hand == net.minecraft.world.InteractionHand.MAIN_HAND ? player.getInventory().selected : 40;
+            var stack = player.getItemInHand(payload.hand);
+            if (payload.slot != currentSlot || !(stack.getItem() instanceof ArmoryBookItem)) { return; }
+            net.minecraft.world.item.component.CustomData.update(net.minecraft.core.component.DataComponents.CUSTOM_DATA, stack, tag -> tag.putString("conarm:BookPage", payload.page));
+        }));
     }
     private static void itemAction(net.minecraft.world.entity.player.Player player, EquipmentSlot slot, String id) {
         var armor = player.getItemBySlot(slot);
@@ -54,5 +61,12 @@ public final class ArmoryNetwork {
         public static final Type<Name> TYPE = new Type<>(ArmoryContent.id("name"));
         public static final StreamCodec<RegistryFriendlyByteBuf, Name> STREAM = StreamCodec.of((buffer, payload) -> { buffer.writeVarInt(payload.container); buffer.writeUtf(payload.name, 50); }, buffer -> new Name(buffer.readVarInt(), buffer.readUtf(50)));
         @Override public Type<Name> type() { return TYPE; }
+    }
+    public record BookPage(net.minecraft.world.InteractionHand hand, int slot, String page) implements CustomPacketPayload {
+        public static final Type<BookPage> TYPE = new Type<>(ArmoryContent.id("book_page"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, BookPage> STREAM = StreamCodec.of((buffer, payload) -> {
+            buffer.writeEnum(payload.hand); buffer.writeVarInt(payload.slot); buffer.writeUtf(payload.page, 256);
+        }, buffer -> new BookPage(buffer.readEnum(net.minecraft.world.InteractionHand.class), buffer.readVarInt(), buffer.readUtf(256)));
+        @Override public Type<BookPage> type() { return TYPE; }
     }
 }

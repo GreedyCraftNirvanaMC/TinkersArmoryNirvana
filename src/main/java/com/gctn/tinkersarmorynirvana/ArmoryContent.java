@@ -24,6 +24,8 @@ import java.util.Map;
 public final class ArmoryContent {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems("conarm");
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks("conarm");
+    private static final DeferredRegister<net.minecraft.sounds.SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, "conarm");
+    public static final DeferredHolder<net.minecraft.sounds.SoundEvent, net.minecraft.sounds.SoundEvent> SAW = SOUNDS.register("little_saw", () -> net.minecraft.sounds.SoundEvent.createVariableRangeEvent(id("little_saw")));
     public static final DeferredRegister<ArmorMaterial> ARMOR_MATERIALS = DeferredRegister.create(Registries.ARMOR_MATERIAL, "conarm");
     public static final DeferredRegister.DataComponents COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, "conarm");
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<CustomData>> ARMOR_DATA =
@@ -73,7 +75,7 @@ public final class ArmoryContent {
         TABS.register("armory", () -> CreativeModeTab.builder().title(net.minecraft.network.chat.Component.translatable("itemGroup.conarm"))
                 .icon(() -> ArmorData.create(ARMORS.get("helmet").get(), "iron", "iron", "iron"))
                 .displayItems((parameters, output) -> {
-                    output.accept(STATION); output.accept(FORGE); output.accept(SOFT_OBSIDIAN); output.accept(PATTERN);
+                    output.accept(STATION); output.accept(FORGE); output.accept(SOFT_OBSIDIAN);
                     output.accept(ITEMS.getEntries().stream().filter(item -> item.getId().getPath().equals("book")).findFirst().orElseThrow().get());
                     MATERIAL_ITEMS.values().forEach(output::accept);
                     for (var material : com.gctn.tconstruct.library.TinkerMaterials.materials) {
@@ -86,7 +88,7 @@ public final class ArmoryContent {
     private ArmoryContent() {}
     public static ResourceLocation id(String path) { return ResourceLocation.fromNamespaceAndPath("conarm", path); }
     public static void register(IEventBus bus) {
-        ITEMS.register(bus); BLOCKS.register(bus); COMPONENTS.register(bus); ARMOR_MATERIALS.register(bus);
+        ITEMS.register(bus); BLOCKS.register(bus); COMPONENTS.register(bus); ARMOR_MATERIALS.register(bus); SOUNDS.register(bus);
         ENTITIES.register(bus); MENUS.register(bus); TABS.register(bus);
         ArmoryRecipes.register(bus); ArmoryNetwork.register(bus);
     }

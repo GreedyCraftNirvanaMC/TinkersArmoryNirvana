@@ -64,14 +64,17 @@ public final class ArmoryWorkshop {
     }
 
     public static Plan plan(Container input, Level level) {
+        return plan(input, level, true);
+    }
+    public static Plan plan(Container input, Level level, boolean allowModifiers) {
         for (var planner : List.copyOf(PLANNERS.values())) { Plan plan = planner.apply(input, level); if (plan != null) { return plan; } }
         if (input.getItem(0).getItem() instanceof ArmoryPatternItem) { return part(input); }
         if (!ArmorData.initialized(input.getItem(0))) { return assemble(input); }
-        Plan plan = polish(input);
-        if (plan == null) { plan = emboss(input); }
+        Plan plan = allowModifiers ? polish(input) : null;
+        if (plan == null && allowModifiers) { plan = emboss(input); }
         if (plan == null) { plan = replace(input); }
         if (plan == null) { plan = repair(input); }
-        if (plan == null && level != null) {
+        if (plan == null && allowModifiers && level != null) {
             for (var recipe : level.getRecipeManager().getAllRecipesFor(ArmoryRecipes.MODIFIER_TYPE.get()).stream()
                     .sorted(java.util.Comparator.comparing(holder -> holder.id().toString())).toList()) {
                 int[] counts = recipe.value().allocation(new ArmoryInput(input));
@@ -81,6 +84,14 @@ public final class ArmoryWorkshop {
             }
         }
         return plan;
+    }
+
+    public static Plan rename(Container input, String name) {
+        if (name.isBlank() || !ArmorData.initialized(input.getItem(0)) || name.equals(input.getItem(0).getHoverName().getString())) { return null; }
+        for (int i = 1; i < 6; i++) { if (!input.getItem(i).isEmpty()) { return null; } }
+        var result = input.getItem(0).copyWithCount(1);
+        result.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, net.minecraft.network.chat.Component.literal(name));
+        return plan(input, result, new int[]{1, 0, 0, 0, 0, 0}, List.of());
     }
 
     public static com.gctn.tconstruct.tables.recipe.StationProcessingRecipes.Plan nativePlan(Container input) {

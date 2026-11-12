@@ -16,20 +16,31 @@ import net.neoforged.neoforge.client.extensions.common.*;
 
 @EventBusSubscriber(modid = "conarm", value = Dist.CLIENT)
 public final class ArmoryClient {
-    private static final KeyMapping ACCESSORIES = new KeyMapping("key.conarm.accessories", org.lwjgl.glfw.GLFW.GLFW_KEY_G, "key.categories.conarm");
+    private static final KeyMapping HELMET = new KeyMapping("key.conarm.toggle_helm.desc", org.lwjgl.glfw.GLFW.GLFW_KEY_G, "key.conarm.category");
+    private static final KeyMapping CHEST = new KeyMapping("key.conarm.toggle_chest.desc", org.lwjgl.glfw.GLFW.GLFW_KEY_H, "key.conarm.category");
+    private static final KeyMapping LEGS = new KeyMapping("key.conarm.toggle_leg.desc", org.lwjgl.glfw.GLFW.GLFW_KEY_J, "key.conarm.category");
     private ArmoryClient() {}
     @SubscribeEvent public static void screens(RegisterMenuScreensEvent event) {
         event.register(ArmoryContent.STATION_MENU.get(), ArmoryScreen::new); event.register(ArmoryContent.ACCESSORY_MENU.get(), AccessoryScreen::new);
     }
-    @SubscribeEvent public static void keys(RegisterKeyMappingsEvent event) { event.register(ACCESSORIES); }
+    @SubscribeEvent public static void keys(RegisterKeyMappingsEvent event) { event.register(HELMET); event.register(CHEST); event.register(LEGS); }
     @SubscribeEvent public static void setup(net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) {
         event.enqueueWork(() -> ArmoryContent.PARTS.values().forEach(item -> net.minecraft.client.renderer.item.ItemProperties.register(item.get(), ArmoryContent.id("material_style"),
                 (stack, level, entity, seed) -> switch (ArmorPartItem.material(stack)) { case "paper" -> 1; case "cactus" -> 2; default -> 0; })));
     }
     @SubscribeEvent public static void tick(net.neoforged.neoforge.client.event.ClientTickEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();
-        while (ACCESSORIES.consumeClick()) { if (minecraft.player != null && minecraft.screen == null) { minecraft.setScreen(new AccessoryActionsScreen()); } }
+        EquipmentSlot slot = HELMET.consumeClick() ? EquipmentSlot.HEAD : CHEST.consumeClick() ? EquipmentSlot.CHEST : LEGS.consumeClick() ? EquipmentSlot.LEGS : null;
+        if (slot == null || minecraft.player == null || minecraft.screen != null) { return; }
+        var armor = minecraft.player.getItemBySlot(slot);
+        if (ArmorData.broken(armor)) { return; }
+        for (var modifier : com.gctn.tinkersarmorynirvana.api.ArmoryRegistry.modifiers().values()) {
+            if (modifier.id.startsWith("conarm:") && modifier.accessory() && ArmorData.level(armor, modifier.id) > 0) {
+                net.neoforged.neoforge.network.PacketDistributor.sendToServer(new com.gctn.tinkersarmorynirvana.station.ArmoryNetwork.Action(modifier.id.substring(modifier.id.indexOf(':') + 1))); break;
+            }
+        }
     }
+    public static KeyMapping accessoryKey(EquipmentSlot slot) { return slot == EquipmentSlot.HEAD ? HELMET : slot == EquipmentSlot.CHEST ? CHEST : LEGS; }
     @SubscribeEvent public static void colors(RegisterColorHandlersEvent.Item event) {
         ArmoryContent.PARTS.values().forEach(item -> event.register((stack, tint) -> ArmorPartItem.color(stack), item.get()));
         ArmoryContent.MATERIAL_ITEMS.forEach((name, item) -> {

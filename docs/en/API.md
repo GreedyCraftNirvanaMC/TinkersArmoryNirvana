@@ -4,28 +4,28 @@
 
 ## Dependencies and lifecycle
 
-Target Java 21, Minecraft 1.21.1, NeoForge 21.1.265+, TinkersNirvana 1.21.1-1.0.1+ and this mod. Add both runtime JARs to your development classpath, and declare required `tconstruct` and `conarm` dependencies in your addon's `neoforge.mods.toml`:
+Target Java 21, Minecraft 1.21.1, NeoForge 21.1.265+, TinkersNirvana 1.21.1-1.0.2+ and this mod. Add both runtime JARs to your development classpath, and declare required `tconstruct` and `conarm` dependencies in your addon's `neoforge.mods.toml`:
 
 ```toml
 [[dependencies.exampleaddon]]
 modId = "tconstruct"
 type = "required"
-versionRange = "[1.21.1-1.0.1,)"
+versionRange = "[1.21.1-1.0.2,)"
 ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.exampleaddon]]
 modId = "conarm"
 type = "required"
-versionRange = "[1.21.1-1.0.0,)"
+versionRange = "[1.21.1-1.0.2,)"
 ordering = "AFTER"
 side = "BOTH"
 ```
 
 ```groovy
 dependencies {
-    implementation files('libs/TinkersNirvana-1.21.1-1.0.1.jar')
-    implementation files('libs/TinkersArmoryNirvana-1.21.1-1.0.1.jar')
+    implementation files('libs/TinkersNirvana-1.21.1-1.0.2.jar')
+    implementation files('libs/TinkersArmoryNirvana-1.21.1-1.0.2.jar')
 }
 ```
 
@@ -69,7 +69,7 @@ Built-in material IDs may be bare (`iron`) or qualified (`tconstruct:iron`); sto
 | `clearTraits(part)` | Remove contributions from that armor part |
 | `install()` | Validate and install/replace this armor definition |
 
-Core and trim durability are multiplied by the slot's original durability factor (boots 13, leggings 15, chest 16, helmet 11), then plating is applied. Defense is distributed by slot (0.14, 0.30, 0.40, 0.16). `modifyStats` receives full-set defense before that distribution. `ArmorData.stats(stack)` returns the resulting single-piece defense.
+Core and trim durability are multiplied by the slot's original durability factor (boots 13, leggings 15, chest 16, helmet 11), then plating is applied. Defense is distributed by slot (0.14, 0.30, 0.40, 0.16). `modifyStats` receives full-set defense before that distribution. `ArmorData.stats(stack)` returns the resulting single-piece defense used by native attributes. `ArmorData.displayStats(stack)` returns the original unallocated defense for book/workshop/tooltips. Both apply the same pure trait/modifier calculation; do not use display defense as a native attribute value.
 
 Edit an existing material using `new ArmorMaterialDefinition(ArmoryRegistry.material("iron"))`, then install the copy. `removeMaterial(id)` hides its parts from the catalog and leaves existing item identifiers intact; equipment with missing definitions loses protection until definitions return.
 
@@ -133,6 +133,10 @@ Use `ArmorData.rebuild`, `damage`, `repair`, `level`, `points`, `freeSlots`, `tr
 
 `ArmoryWorkshop.applyModifier` returns an independent result or `ItemStack.EMPTY` for rejection. The public workshop planner also powers the TinkersNirvana native station adapter. Custom planners can therefore extend both station paths when the source item is one of the adapter's supported armor/pattern classes.
 
+`plan(input, level, allowModifiers)` restricts builtin modifier recipes, polishing and embossment to the forge when false. The original two-argument overload keeps its permissive behavior for callers. Registered custom planners run first in either case; an addon owns any additional progression policy for its operations. `rename(input, name)` creates a pure rename-only plan for armor with no other inputs.
+
+`ArmoryMenu` reserves menu slot 0 for the result, 1–6 for the six container inputs, and 7–42 for the player inventory. The default selection is repair; selection 1–4 is helmet/chest/legs/boots. `ArmoryStationLayout` supplies coordinates and accepted part types. Menu selection uses server-validated vanilla menu buttons. Do not modify input ownership or commit preview deconstruction parts directly; the block entity preserves the original armor until the first part is taken.
+
 ## Casting and visual extensions
 
 `ArmoryCasting.bind(materialId, fluidId)` binds an existing registered fluid for armor-part casting. Call during startup before server start. It does not register a fluid. A material must also be castable in TinkersNirvana. Native metal/clay casts and melting rules are installed at server start. Respect the dependency's clay-cast configuration.
@@ -141,6 +145,8 @@ Use `ArmorData.rebuild`, `damage`, `repair`, `level`, `points`, `freeSlots`, `tr
 
 Translation keys are `trait.<namespace>.<path>.name/.desc`, `modifier.<namespace>.<path>.name/.desc`, and ordinary item keys. The manual reads current definitions. API compatibility is source-level for this port; the old `c4.conarm`/Forge 1.12 ABI is not retained.
 
-The manual builds its chapter indexes, material/trait links and armor previews from these registries when opened. Modifier diagrams use the current native `conarm:armor_modifier` recipes, so addons and KubeJS need no separate hardcoded book recipe. Long content is paginated. Reopen the book after a recipe or resource reload to rebuild its pages. The original welcome page can be overridden at `assets/conarm/book/<language>/intro/welcome.json`, with English fallback. Book/paper/navigation sprites are retained from Mantle under the included MIT notice.
+The manual loads the original `assets/conarm/book/index.json` and section arrays. Localized pages are at `assets/conarm/book/<language>/<section>/<entry>.json`, with English fallback; labels/flavor text use `<language>/language.lang`, and appearance uses `appearance.json` plus localized overrides. Original page types include `text`, `imageText2`, `armor`, `armormaterial`, `armormodifier` and `armormodifier_polished`. Material pages resolve live armor definitions in native material order; additional modifiers are appended to their corresponding original section. Modifier diagrams use current `conarm:armor_modifier` recipes. Reopen after a reload. Fixed original page templates have bounded text areas: resource-pack authors should keep text within the source layout. Bookmarks use the book item's `CUSTOM_DATA` key `conarm:BookPage`. Mantle's MIT and TinkersAntique's LGPL notices are included. See [UI source mapping](../UI_PORT.md).
+
+Seven existing armor-part items are registered through TinkersNirvana's `AntiqueParts.registerExternal`. This makes native stencil selection, selected-pattern labels, part building and part storage recognize the real armor items. The live material predicate honors later KubeJS edits. No second set of items or automatic native casts is registered. Addon authors with their own parts can use the same [external part API](https://github.com/GreedyCraftNirvanaMC/TinkersNirvana/blob/codex/armory-parts-api/docs/EXTERNAL_PARTS.md), using a namespaced ID/stat, pure material predicate, independent-stack factory and localized name. Register on both physical sides after items exist; the addon remains responsible for its own casting, rendering and armor assembly rules.
 
 For item models, use Minecraft 1.21's `textures/item/` and `textures/block/` directories or explicitly add your sprite sources to `assets/minecraft/atlases/blocks.json`. A model's PNG can exist and still render as missing when the target atlas does not collect it. Direct worn-armor textures and GUI textures are loaded separately and do not need blocks-atlas entries.

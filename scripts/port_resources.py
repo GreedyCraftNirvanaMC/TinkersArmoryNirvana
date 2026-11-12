@@ -135,7 +135,6 @@ def main(legacy):
     for metal in ["iron", "gold", "copper", "cobalt", "ardite", "manyullyn", "bronze", "steel", "aluminum", "lead", "silver", "electrum"]:
         write(f"data/conarm/recipe/armorforge_{metal}.json", {"type": "minecraft:crafting_shaped", "pattern": ["BBB", "MTM", "M M"],
               "key": {"B": {"item": "tconstruct:seared_bricks"}, "M": {"tag": f"c:storage_blocks/{metal}"}, "T": {"item": "conarm:armorstation"}}, "result": {"id": "conarm:armorforge"}})
-    write("data/conarm/recipe/pattern.json", {"type": "minecraft:crafting_shapeless", "ingredients": [{"item": "tconstruct:pattern"}], "result": {"id": "conarm:pattern"}})
     write("data/conarm/recipe/kit_repair.json", {"type": "conarm:kit_repair", "category": "equipment"})
     single = {"diamond": "minecraft:diamond", "emerald": "minecraft:emerald", "soulbound": "minecraft:nether_star", "reinforced": "tconstruct:reinforcement",
               "parasitic": "tconstruct:necrotic_bone", "mending": "tconstruct:mending_moss", "concealed": "conarm:invisible_ink", "sticky": "minecraft:cobweb",
@@ -194,7 +193,7 @@ def generate_languages(source):
             "baconlicious": ("Baconlicious", "培根美味"), "cheapskate": ("Cheapskate", "吝啬"), "cheap": ("Cheap", "廉价"),
             "heavy": ("Heavy", "厚重"), "tasty": ("Tasty", "美味"), "alien": ("Alien", "异星"), "aridiculous": ("Aridiculous", "干旱"),
             "magnetic": ("Magnetic", "磁力"), "dense": ("Dense", "致密"), "lightweight": ("Lightweight", "轻盈"),
-            "duritos_ranch": ("Duritae", "坚韧"), "ecological": ("Ecological", "生态"), "reinforced": ("Reinforced", "加固"),
+            "duritos_ranch": ("Duritae", "持久"), "ecological": ("Ecological", "生态"), "reinforced": ("Reinforced", "加固"),
             "emerald": ("Emerald", "绿宝石"), "mending": ("Mending", "修补"), "creative": ("Creative", "创造强化"),
             "soulbound": ("Soulbound", "灵魂绑定"), "diamond": ("Diamond", "钻石"), "extramodifier": ("Extra Modifier", "额外强化")}
         descriptions = {
@@ -220,6 +219,11 @@ def generate_languages(source):
             result[f"item.conarm.clay_cast_{part}"] = result["item.conarm." + part] + ("黏土铸模" if path.stem == "zh_cn" else " Clay Cast")
         for armor, chinese in zip(ARMOR, ["头盔", "胸甲", "护腿", "靴子"]):
             result["item.conarm." + armor] = chinese if path.stem == "zh_cn" else armor.title()
+        # 旧版语言文件允许值引用其它键；原样转为 JSON 会把 stat.core.durability.name 显示给玩家。
+        for key in list(result):
+            seen = {key}
+            while result[key] in result and result[key] not in seen:
+                seen.add(result[key]); result[key] = result[result[key]]
         write(f"assets/conarm/lang/{path.stem}.json", result)
 
 
@@ -236,7 +240,17 @@ def extra_translations(chinese):
         "tooltip.conarm.core_stats": ("Base durability: %s  Defense: %s", "基础耐久：%s　防御：%s"),
         "tooltip.conarm.plate_stats": ("Durability multiplier: %s  Bonus: %s  Toughness: %s", "耐久倍率：%s　附加耐久：%s　韧性：%s"),
         "tooltip.conarm.trim_stats": ("Extra durability: %s", "附加耐久：%s"),
-        "tooltip.conarm.accessories": ("Open the accessory controls with the configured key (G by default).", "按配件控制按键打开菜单（默认 G）。"),
+        "tooltip.conarm.accessories": ("Press %s to use this armor's accessory.", "按%s使用这件护甲的配件。"),
+        "gui.conarm.remaining_modifiers": ("Modifiers: %s", "剩余强化次数：%s"),
+        "gui.error": ("ERROR", "错误"),
+        "gui.toolstation.repair": ("Repair & Modify", "修复&强化"),
+        "gui.toolstation.traits": ("Traits", "特性"),
+        "gui.toolstation.components": ("Components", "组件"),
+        "gui.toolstation.noTraits": ("None :[", "无 :["),
+        "gui.general.hover": ("Hover over the entries for more info", "将指针悬停在条目上以获取更多信息"),
+        "modifier.extratrait_armor.name": ("Embossment", "刻印"),
+        "gui.armorstation.deconstruct": ("Deconstruct", "分解"),
+        "gui.armorstation.deconstruct.info": ("Place intact, undamaged armor in the slot on the right to preview its parts. Take a part to deconstruct; modifiers are lost. Empty accessory inventories first.", "将完整、无损坏的护甲放入右侧槽位以预览部件。取出任一部件完成分解，强化不会保留。配件中的物品需要事先取空。"),
         "gui.conarm.name": ("Armor name", "护甲名称"), "gui.conarm.inputs": ("Materials", "投入材料"),
         "gui.conarm.help1": ("Assemble: core, plate, trim in the top row.", "组装：上排依次放入核心、护甲板、夹板。"),
         "gui.conarm.help2": ("Upgrade or repair: armor first, ingredients after it.", "强化或修复：首格放护甲，其余格放材料。"),

@@ -30,7 +30,11 @@ public class ArmoryStationBlock extends BaseEntityBlock {
     }
     @Override protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState next, boolean moving) {
         if (!state.is(next.getBlock())) {
-            if (level.getBlockEntity(pos) instanceof ArmoryStationBlockEntity station) { Containers.dropContents(level, pos, station); }
+            if (level.getBlockEntity(pos) instanceof ArmoryStationBlockEntity station) {
+                Containers.dropContents(level, pos, station);
+                var source = station.cancelDeconstruction();
+                if (!source.isEmpty()) { Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), source); }
+            }
             super.onRemove(state, level, pos, next, moving);
         }
     }

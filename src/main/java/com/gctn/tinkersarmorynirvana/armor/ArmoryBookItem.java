@@ -11,7 +11,7 @@ import net.minecraft.world.level.Level;
 public class ArmoryBookItem extends Item {
     public ArmoryBookItem() { super(new Properties().stacksTo(1)); }
     @Override public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        if (level.isClientSide) { com.gctn.tinkersarmorynirvana.client.ArmoryBookScreen.open(); }
+        if (level.isClientSide) { com.gctn.tinkersarmorynirvana.client.ArmoryBookScreen.open(hand); }
         return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide);
     }
 }

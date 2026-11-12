@@ -12,7 +12,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
-import java.util.ArrayList;
 
 public class ArmoryPatternItem extends Item {
     public ArmoryPatternItem() { super(new Properties()); }
@@ -26,11 +25,11 @@ public class ArmoryPatternItem extends Item {
     @Override public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!level.isClientSide) {
-            var names = new ArrayList<>(ArmoryContent.PARTS.keySet());
-            String name = names.get(Math.floorMod(names.indexOf(selected(stack)) + (player.isShiftKeyDown() ? -1 : 1), names.size()));
-            CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-            tag.putString("Part", name); stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-            player.displayClientMessage(getName(stack), true);
+            var replacement = new ItemStack(com.gctn.tconstruct.tools.PatternItem.PATTERN.get(), stack.getCount());
+            var tag = new CompoundTag(); tag.putString("Pattern", "conarm:" + selected(stack));
+            replacement.set(com.gctn.tconstruct.init.TinkerDataComponents.TINKER_MATERIAL.get(), CustomData.of(tag));
+            player.setItemInHand(hand, replacement);
+            return InteractionResultHolder.success(replacement);
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }

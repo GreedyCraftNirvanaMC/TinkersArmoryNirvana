@@ -1,15 +1,15 @@
 # Verification / 验证说明
 
-The runtime targets Java 21, Minecraft 1.21.1 and NeoForge 21.1.265. The baseline dependency is the locally built `TinkersNirvana-1.21.1-1.0.1.jar`. Client visual/interaction acceptance is intentionally left to the user, as requested. A dedicated-server check does not establish how the real client looks, sounds or responds to input.
+The runtime targets Java 21, Minecraft 1.21.1 and NeoForge 21.1.265. The baseline dependency is the locally built `TinkersNirvana-1.21.1-1.0.2.jar`. Client visual/interaction acceptance is intentionally left to the user, as requested. A dedicated-server check does not establish how the real client looks, sounds or responds to input.
 
-## Recorded results — 1.21.1-1.0.1, 2026-11-12
+## Recorded results — 1.21.1-1.0.2, 2026-11-12
 
 | Check | Result |
 | --- | --- |
 | Gradle build, runtime and sources JARs | Passed |
-| Dedicated server without KubeJS | 287 assertions passed |
-| Dedicated server with KubeJS build.381 and the supplied example scripts | 301 assertions passed; startup/server scripts loaded without errors or warnings |
-| Static resource audit | 525 JSON files and 208 required English/Chinese translation keys checked; passed |
+| Dedicated server without KubeJS | 332 assertions passed |
+| Dedicated server with KubeJS build.381 and the supplied example scripts | 346 assertions passed; startup/server scripts loaded without errors or warnings |
+| Static resource audit | 525 JSON files and 220 required English/Chinese translation keys checked; passed |
 | Missing-atlas regression check | Removing the atlas declaration makes the audit fail on 211 affected model/texture references; restoring it passes |
 | Real-client rendering, screens, input and audio | Pending manual acceptance by the user |
 
@@ -19,7 +19,7 @@ Generated server reports are `build/reports/armory-selftest-without-kubejs.md` a
 
 ```powershell
 $env:JAVA_HOME = 'C:\path\to\jdk-21'
-.\gradlew.bat build '-PtinkersNirvanaJar=C:/path/to/TinkersNirvana-1.21.1-1.0.1.jar'
+.\gradlew.bat build '-PtinkersNirvanaJar=C:/path/to/TinkersNirvana-1.21.1-1.0.2.jar'
 ```
 
 This compiles both common and client code and packages runtime/source JARs. It does not launch Minecraft. Optional KubeJS classes are isolated from ordinary startup when KubeJS is absent.
@@ -51,7 +51,10 @@ Checks cover:
 - Broken-item preservation, attribute removal/restoration and complete reinforcement.
 - Accessory effect cleanup without removing independent potion effects; optional leveling rewards and rejection of armor-bypassing damage.
 - Immediate accessory storage persistence, recursive-storage rejection and access closure when armor is removed.
-- Actual station-menu shift-click consumption and rejection of replayed results.
+- Actual native part-builder previews and commits for all seven armor parts: pure previews, exact costs and retained patterns; native pickaxe-head processing remains valid.
+- Original menu tab selection, radial and selected-part coordinates, filled inactive-slot recovery, station/forge permissions, rename-only plans and rejection of wrong core types.
+- Actual menu click/shift-click consumption and replay rejection; preview-only deconstruction, cancellation, source persistence, committing one part, damaged/nonempty-storage rejection and breaking before commit.
+- Original potion-belt/knapsack slot positions, raw display defense versus allocated native attributes, and migration of saved legacy armor patterns.
 - Registry-aware disk and network component round trips, and native smeltery casting registration.
 - With KubeJS: actual material/trait/modifier installation, editing a builtin, callback execution and custom recipe availability.
 
@@ -72,13 +75,14 @@ Model textures must also be collected by the target atlas. Minecraft 1.21's defa
 
 ## 客户端手动验收
 
-1. 两端安装同版本的本模组与 TinkersNirvana。进入测试世界，确认创造栏中的护甲、部件、模具和宝典正常显示，没有紫黑贴图。
-   使用 `1.21.1-1.0.1` 替换旧版，勿同时保留两个版本。重新启动客户端后检查，不以旧进程中的资源缓存判断修复结果。确认日志不再出现 `Missing textures in model conarm:`。
-2. 用护甲模具加工木质部件，再用不同材料组装一件护甲；观察预览人偶、实际穿戴和物品图标。取消／关闭界面时不应扣料或产生额外成品；Shift 取出后应只扣一次。
-3. 测试修复、换部件、抛光和浮雕；放入错误核心、无关原料或冲突强化时不应产生可取出的结果。把护甲用坏后应保留物品，修复后恢复防护。
-4. 安装旅行配件后按 G。测试腰带交换、药水腰带与背包的存取、关闭重开、脱装和重新登录；物品应保留且不能把带库存的护甲套进自身。
-5. 分别测试缩放、夜视、灵魂视野、隐身与缓降的开关。脱装、损坏或关闭功能后，本模组施加的状态应清理，普通药水效果应保留。确认附近实体的灵魂标记、护目镜／披风／背包模型位置与声效。
-6. 测试弹跳、潜浮、高步和冰霜行者；确认移动、落地、冰面与不稳定黑曜石消退表现。多人同时操作同一工作台时不应复制物品。
-7. 打开宝典，确认首次显示原版风格的封面，打开后是双页书本。点击章节目录、材料／词条链接和返回箭头；测试左右方向键、滚轮、Home 与 Backspace。材料页应显示部件词条和护甲预览，强化页应显示当前配方、原料数量及物品提示。改变 GUI 缩放后内容应留在书页内，长条目应续页显示。资源或配方重载后，关闭再打开手册以更新内容。
+先将客户端与服务端的两个运行 JAR 都替换为 `1.21.1-1.0.2`，移除旧版本并重新启动。不要把源码 JAR 放进 `mods`。
+
+1. 对照提供的原版截图检查手册：封面打开后左侧深色、右侧五个章节图标；材料页有侧边物品列、基底／护甲板两列、下方夹板与斜体风味文字。检查彩色数值、带下划线的词条与悬停提示。翻页、目录、返回和书本重开后的阅读位置应正常，GUI 缩放后各项仍在书页内。
+2. 创造栏、部件、护甲和工作台不应有紫黑贴图；日志不应再出现 `Missing textures in model conarm:`。在原生模具台选择七种护甲部件模具，到原生部件加工台加工木部件。预览不扣料，取出才按成本扣料，模具保留。
+3. 对照原版装配台／锻造台截图检查：五个标签、木／金属横梁、左侧跟随鼠标的本人皮肤预览、右侧上下两栏、原版环形六槽、命名框、箭头和部件空槽轮廓。切到胸甲标签后，应是下中核心、左护甲板、右夹板；右侧显示护甲属性与特性。测试面板滚动和悬停提示。
+4. 测试组装、修复、换部件与命名。普通台不能应用强化、抛光或刻印，并给出锻造台提示；锻造台允许。错误核心、无关投入和冲突强化不应产生成品。关闭／取消不扣料，Shift 取出只扣一次。
+5. `deconstructTools` 开启时，空输入的修复模式可把完好护甲放入右侧槽预览分解。取回原护甲应取消；取一件部件后才完成分解，不能再取回原护甲。预览时关闭重开、保存重载或拆台均不可复制物品。损坏护甲或配件内仍有物品时应拒绝。
+6. G 操作头盔、H 操作胸甲、J 操作护腿的已安装配件，应直接切换能力或打开原版背包／药水腰带。测试存取、快捷栏交换、对应按键关闭、脱装、损坏和重新登录；库存应保留，不得将带库存的护甲套进自身。
+7. 检查实际穿戴和配件模型、锯木／铁砧声音、夜视／缩放／灵魂视野、隐身／缓降开关。脱装、损坏和关闭功能后，只清理本模组自己的效果。测试弹跳、潜浮、高步、冰霜行者及多人同时操作同一工作台的表现。
 
 These are the remaining manual acceptance checks, not claims of automated client verification.

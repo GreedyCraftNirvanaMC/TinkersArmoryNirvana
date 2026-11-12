@@ -28,18 +28,30 @@ public class AccessoryMenu extends AbstractContainerMenu {
         storage = new SimpleContainer(27) { @Override public void setChanged() { super.setChanged(); save(); } };
         data.set(0, accessory.equals("potion_belt") ? 1 : 0); addDataSlots(data);
         if (equipment != null) { load(); }
-        for (int i = 0; i < 27; i++) {
-            final int index = i;
-            addSlot(new Slot(storage, i, 8 + (i % 9) * 18, 18 + (i / 9) * 18) {
+        for (int i = 0; i < 27; i++) { addSlot(storageSlot(i, 8 + (i % 9) * 18, 18 + (i / 9) * 18)); }
+        for (int row = 0; row < 3; row++) { for (int col = 0; col < 9; col++) { addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 85 + row * 18)); } }
+        for (int i = 0; i < 9; i++) { addSlot(new Slot(inventory, i, 8 + i * 18, 143)); }
+        updateSlotPositions();
+    }
+    private Slot storageSlot(int index, int x, int y) {
+        return new Slot(storage, index, x, y) {
                 @Override public boolean isActive() { return !potions() || index < 7; }
                 @Override public boolean mayPlace(ItemStack stack) {
                     if (!isActive() || !stack.canFitInsideContainerItems() || stack.getItem() instanceof ModularArmorItem) { return false; }
                     return !potions() || stack.getItem() instanceof net.minecraft.world.item.PotionItem;
                 }
-            });
+            };
+    }
+    @Override public void setData(int id, int value) { super.setData(id, value); updateSlotPositions(); }
+    private void updateSlotPositions() {
+        if (slots.size() != 63) { return; }
+        for (int i = 0; i < 63; i++) {
+            var current = slots.get(i); Slot moved;
+            if (i < 27) { moved = storageSlot(i, potions() ? 26 + i * 18 : 8 + i % 9 * 18, potions() ? 20 : 18 + i / 9 * 18); }
+            else if (i < 54) { int index = i - 27; moved = new Slot(inventory, 9 + index, 8 + index % 9 * 18, (potions() ? 51 : 85) + index / 9 * 18); }
+            else { int index = i - 54; moved = new Slot(inventory, index, 8 + index * 18, potions() ? 109 : 143); }
+            moved.index = current.index; slots.set(i, moved);
         }
-        for (int row = 0; row < 3; row++) { for (int col = 0; col < 9; col++) { addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 86 + row * 18)); } }
-        for (int i = 0; i < 9; i++) { addSlot(new Slot(inventory, i, 8 + i * 18, 144)); }
     }
     public boolean potions() { return data.get(0) != 0; }
     private void load() {

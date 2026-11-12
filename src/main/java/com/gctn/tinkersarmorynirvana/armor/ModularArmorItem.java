@@ -56,7 +56,7 @@ public class ModularArmorItem extends ArmorItem {
     }
     @Override public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         if (!ArmorData.initialized(stack)) { tooltip.add(Component.translatable("tooltip.conarm.unbuilt")); return; }
-        var stats = ArmorData.stats(stack);
+        var stats = ArmorData.displayStats(stack);
         if (ArmorData.broken(stack)) { tooltip.add(Component.translatable("tooltip.conarm.broken").withStyle(ChatFormatting.RED)); }
         tooltip.add(Component.translatable("tooltip.conarm.durability", stack.getMaxDamage() - stack.getDamageValue(), stack.getMaxDamage()));
         tooltip.add(Component.translatable("tooltip.conarm.defense", stats.defense, stats.toughness));
@@ -72,6 +72,7 @@ public class ModularArmorItem extends ArmorItem {
             if (points > 0) { tooltip.add(Component.translatable("modifier." + modifier.id.replace(':', '.') + ".name")
                     .append(" " + points + "/" + modifier.pointsPerLevel() * modifier.maxLevel()).withStyle(ChatFormatting.GOLD)); }
         }
-        tooltip.add(Component.translatable("tooltip.conarm.accessories").withStyle(ChatFormatting.GRAY));
+        String key = switch (getEquipmentSlot()) { case HEAD -> "key.conarm.toggle_helm.desc"; case CHEST -> "key.conarm.toggle_chest.desc"; default -> "key.conarm.toggle_leg.desc"; };
+        if (getEquipmentSlot() != net.minecraft.world.entity.EquipmentSlot.FEET) { tooltip.add(Component.translatable("tooltip.conarm.accessories", Component.keybind(key)).withStyle(ChatFormatting.GRAY)); }
     }
 }

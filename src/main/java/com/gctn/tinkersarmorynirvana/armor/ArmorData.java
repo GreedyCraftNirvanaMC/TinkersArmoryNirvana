@@ -105,6 +105,13 @@ public final class ArmorData {
     }
 
     public static ArmorStats stats(ItemStack stack) {
+        return stats(stack, true);
+    }
+    /** Original armor-information value, before the slot's native attribute allocation. */
+    public static ArmorStats displayStats(ItemStack stack) {
+        return stats(stack, false);
+    }
+    private static ArmorStats stats(ItemStack stack, boolean allocateDefense) {
         if (!(stack.getItem() instanceof ModularArmorItem item)) { throw new IllegalArgumentException("Expected modular armor"); }
         CompoundTag tag = read(stack);
         var core = ArmoryRegistry.material(tag.getString("Core"));
@@ -123,7 +130,7 @@ public final class ArmorData {
             var polish = ArmoryRegistry.material(tag.getString("Polished"));
             if (polish != null) { stats.toughness = polish.toughness; }
         }
-        stats.defense = Math.round(stats.defense * DEFENSE[index] * 100) / 100F;
+        stats.defense = Math.round(stats.defense * (allocateDefense ? DEFENSE[index] : 1) * 100) / 100F;
         stats.validate(); return stats;
     }
 

@@ -8,12 +8,12 @@
 
 ```groovy
 dependencies {
-    implementation files('libs/TinkersNirvana-1.21.1-1.0.1.jar')
-    implementation files('libs/TinkersArmoryNirvana-1.21.1-1.0.1.jar')
+    implementation files('libs/TinkersNirvana-1.21.1-1.0.2.jar')
+    implementation files('libs/TinkersArmoryNirvana-1.21.1-1.0.2.jar')
 }
 ```
 
-在附属的 `neoforge.mods.toml` 中分别声明 `tconstruct` 和 `conarm` 必需依赖，`ordering="AFTER"`、`side="BOTH"`，最低版本分别为 `1.21.1-1.0.1` 与 `1.21.1-1.0.0`。完整 TOML 示例见英文参考对应章节。
+在附属的 `neoforge.mods.toml` 中分别声明 `tconstruct` 和 `conarm` 必需依赖，`ordering="AFTER"`、`side="BOTH"`，最低版本分别为 `1.21.1-1.0.2` 与 `1.21.1-1.0.2`。完整 TOML 示例见英文参考对应章节。
 
 普通定义注册放进 `FMLCommonSetupEvent.enqueueWork`，在两个依赖完成注册之后执行。KubeJS 的修改事件在之后的插件 `afterInit` 阶段触发，因此整合包可以调整 Java 附属注册的内容。不要从异步线程修改全局定义表。纯 Java 附属不必依赖 KubeJS。
 
@@ -56,7 +56,7 @@ new ArmorMaterialDefinition("exampleaddon:amethyst")
 | `clearTraits(part)` | 清除指定部件的词条贡献 |
 | `install()` | 校验并安装或替换护甲材料定义 |
 
-原版耐久因子依次为靴子 13、护腿 15、胸甲 16、头盔 11。核心与夹板分别乘该因子，先加和，再乘护甲板倍率，最后加入护甲板附加耐久。防御按上述部位分配为 0.14、0.30、0.40、0.16。`modifyStats` 阶段的 `defense` 仍是分配前的整套基础值；`ArmorData.stats` 返回分配后的单件值。其余未特别说明的属性为单件值。
+原版耐久因子依次为靴子 13、护腿 15、胸甲 16、头盔 11。核心与夹板分别乘该因子，先加和，再乘护甲板倍率，最后加入护甲板附加耐久。防御按上述部位分配为 0.14、0.30、0.40、0.16。`modifyStats` 阶段的 `defense` 仍是分配前的整套基础值；`ArmorData.stats(stack)` 返回分配后的单件值，供原生属性使用；`ArmorData.displayStats(stack)` 保留分配前的数值，供原版风格的界面和提示显示。两者共用无副作用的计算过程，不要把显示值直接写进原生属性。其余未特别说明的属性为单件值。
 
 修改现有定义时，用 `new ArmorMaterialDefinition(ArmoryRegistry.material("iron"))` 构造副本，修改后 `install()`。缺少基础材料、非法倍率、非有限数值、未知词条或越界等级都会报错。`removeMaterial(id)` 可禁用护甲材料；已有装备保留材料 ID，在定义缺失时失去防护，重新提供定义后可以恢复。
 
@@ -138,6 +138,14 @@ ArmoryRegistry.registerModifier(new ArmorModifier("exampleaddon:amethyst_guard")
 
 翻译键为 `trait.<namespace>.<path>.name/.desc`、`modifier.<namespace>.<path>.name/.desc` 及常规物品翻译键。宝典读取当前定义，因此附属注册的内容也能进入手册。
 
-手册每次打开时，从这些注册表生成章节索引、材料／词条链接与护甲预览。强化图示直接读取当前 `conarm:armor_modifier` 配方，因此附属和 KubeJS 无需额外硬编码书内配方。长内容自动续页；配方或资源重载后，关闭再打开手册以重新生成页面。可通过资源包覆盖 `assets/conarm/book/<语言>/intro/welcome.json` 替换欢迎页，缺失时回退英文。书本、纸张与导航纹理沿用 Mantle，并附有完整 MIT 许可。
+手册读取原版 `assets/conarm/book/index.json` 和各章节数组。页面位于 `book/<语言>/<章节>/<条目>.json`，缺失时回退到英文；标签和风味文字位于对应的 `language.lang`，外观通过 `appearance.json` 与本地化覆盖调整。保留 `text`、`imageText2`、`armor`、`armormaterial`、`armormodifier`、`armormodifier_polished` 模板。材料页按匠魂材料顺序读取当前定义，附属强化追加到相应原版章节，配方图读取当前 `conarm:armor_modifier` 配方。固定模板的文字区域有边界，资源包作者应按原布局控制长度；重载后重新打开书本。阅读位置保存在书本 `CUSTOM_DATA` 的 `conarm:BookPage` 中。源码对应关系见 [UI 移植说明](../UI_PORT.md)。
 
 物品模型优先使用 1.21 的 `textures/item/`、`textures/block/` 路径；采用其它目录时，必须在 `assets/minecraft/atlases/blocks.json` 显式声明 sprite 来源。仅有 PNG 文件并不保证模型能够显示，目标图集也必须收集它。穿戴护甲纹理与 GUI 纹理直接加载，不需要加入方块图集。
+
+## 原生部件加工与界面契约
+
+七种既有护甲部件通过依赖的 `AntiqueParts.registerExternal` 接入原生模具目录、选中模具名称、部件加工台与部件箱，未创建第二套物品。材料谓词在加工时读取当前定义，KubeJS 修改后继续生效。自己的附属部件可使用同一接口，提供完整命名空间 ID／属性标识、材料消耗、已有物品供应器、纯材料谓词、独立 ItemStack 工厂和本地化名称。两端在物品注册后统一注册；渲染、浇筑、铸模和组装规则仍由物品所属附属负责。完整示例见依赖的 [EXTERNAL_PARTS.md](https://github.com/GreedyCraftNirvanaMC/TinkersNirvana/blob/codex/armory-parts-api/docs/EXTERNAL_PARTS.md)。
+
+`ArmoryWorkshop.plan(input, level, allowModifiers)` 的布尔参数限制内置强化配方、抛光与刻印，普通装配台传 false；原双参数重载保持允许这些操作。附属规划器仍优先执行，需自行定义其操作的额外进度规则。`rename(input, name)` 可以生成不含其他投入物的纯命名计划。
+
+`ArmoryMenu` 的菜单槽编号为：产物 0、六个输入 1–6、玩家库存 7–42；容器输入本身仍按 0–5 索引。标签 0 是修复，1–4 分别是头盔、胸甲、护腿、靴子，由服务端校验的原生菜单按钮切换。`ArmoryStationLayout` 提供坐标和匹配部件类型。分解预览不是真实输入物品，原护甲在首个部件被取走时才消耗；不要绕过方块实体直接提交预览或修改所有权。
