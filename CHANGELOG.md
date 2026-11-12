@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.21.1-1.0.6
+
+- Keep both chapter icons and labels fully opaque in idle and hovered states, with a fixed label color. Only the hover background changes.
+
 ## 1.21.1-1.0.5
 
 - Render all five book chapter icons at full opacity, matching the dependency's guide. Remove the legacy idle alpha tint that faded some item render layers while leaving others opaque; retain hover backgrounds and label colors.
