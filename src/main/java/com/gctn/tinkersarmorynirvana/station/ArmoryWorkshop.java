@@ -252,7 +252,7 @@ public final class ArmoryWorkshop {
         if (tag.contains("EmbossedTraits")) { return null; }
         CompoundTag traits = new CompoundTag();
         for (var trait : material.traits(index)) { traits.putInt(trait.id(), trait.level()); }
-        tag.put("EmbossedTraits", traits); ArmorData.write(result, tag);
+        tag.put("EmbossedTraits", traits); tag.putString("EmbossedMaterial", material.id); ArmorData.write(result, tag);
         if (ArmorData.usedSlots(result) > ArmorData.stats(result).modifiers) { return null; }
         ArmorData.rebuild(result); return plan(input, result, new int[]{1, 1, 1, 1, 1, 1}, List.of());
     }

@@ -119,11 +119,13 @@ State changes require `ctx.save()`. It merges that definition's state into the l
 
 `ArmorData.create(ModularArmorItem, core, plates, trim)` builds initialized armor. `ArmorPartItem.create(material)` creates a material-tagged part. `ArmoryContent.ARMORS` and `PARTS` expose builtin suppliers. Only the four humanoid armor slots are supported by builtin assembly.
 
-`ArmorData.read(stack)` returns a copy of the persistent `conarm:armor` component. It stores `Version`, `Core`, `Plates`, `Trim`, `Modifiers` (ID → integer points), `State` (ID → compound), `Disabled`, optional `Polished`, `EmbossedTraits`, repair count and namespaced `Extensions` entries. Write back through `ArmorData.write`. Never edit another stack's preview or shared component in place.
+`ArmorData.read(stack)` returns a copy of the persistent `conarm:armor` component. It stores `Version`, `Core`, `Plates`, `Trim`, `Modifiers` (ID → integer points), `State` (ID → compound), `Disabled`, optional `Polished`, `EmbossedTraits`/`EmbossedMaterial`, repair count and namespaced `Extensions` entries. Write back through `ArmorData.write`. Never edit another stack's preview or shared component in place.
 
 `ArmorStorage` handles the separate `conarm:storage` component. It stores `Inventories` for `travel_sack`, `potion_belt` and `travel_belt`, with numbered slots containing Minecraft's registry-aware item serialization. Separating storage keeps normal stat lookups from copying a full backpack. Both components persist and synchronize using native component codecs.
 
 Use `ArmorData.rebuild`, `damage`, `repair`, `level`, `points`, `freeSlots`, `traits` and `broken` rather than duplicating their logic. Broken equipment loses its native attributes and active abilities while its stack and storage remain intact. Repair restores protection. Native anvil naming is allowed; ordinary enchanting, two-item anvil repair and vanilla repair-item recipes are disabled. This preserves the mod's workshop-based progression and avoids consuming armor containing a backpack.
+
+Since 1.21.1-1.0.9, `ArmorData.traitMaterial(stack, id)` returns the canonical material ID that first supplies a material trait, in core/plates/trim order, followed by embossment. Empty means no source is known. `traitColor(stack, id)` returns its current 24-bit RGB color, or neutral `0xaaaaaa` when unavailable. Both short and namespaced trait IDs are accepted. These methods do not change level resolution or stacking. New embossments persist `EmbossedMaterial`; older stacks lacking that metadata are not assigned a guessed source. Armor/part tooltips and workstation trait rows use source colors; the book retains its original dark underlined body text and colored material hover descriptions.
 
 ## Addon state and global stat calculations
 

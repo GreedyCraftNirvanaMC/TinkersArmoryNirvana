@@ -62,7 +62,7 @@ public class ModularArmorItem extends ArmorItem {
         tooltip.add(Component.translatable("tooltip.conarm.defense", stats.defense, stats.toughness));
         tooltip.add(Component.translatable("tooltip.conarm.modifiers", ArmorData.freeSlots(stack)));
         ArmorData.traits(stack).forEach((id, level) -> tooltip.add(Component.translatable("trait." + id.replace(':', '.') + ".name")
-                .append(level > 1 ? " " + level : "").withStyle(ChatFormatting.AQUA)));
+                .append(level > 1 ? " " + level : "").withColor(ArmorData.traitColor(stack, id))));
         for (var modifier : ArmoryRegistry.modifiers().values()) {
             int points = ArmorData.points(stack, modifier.id);
             if (points > 0) { tooltip.add(Component.translatable("modifier." + modifier.id.replace(':', '.') + ".name")

@@ -90,7 +90,7 @@ public final class ArmoryClient {
         if (!net.minecraft.client.gui.screens.Screen.hasAltDown()) { return; }
         var stack = event.getItemStack();
         if (stack.getItem() instanceof ModularArmorItem && ArmorData.initialized(stack)) {
-            for (String id : ArmorData.traits(stack).keySet()) { event.getToolTip().add(net.minecraft.network.chat.Component.translatable("trait." + id.replace(':', '.') + ".desc")); }
+            for (String id : ArmorData.traits(stack).keySet()) { event.getToolTip().add(net.minecraft.network.chat.Component.translatable("trait." + id.replace(':', '.') + ".desc").withColor(ArmorData.traitColor(stack, id))); }
             for (var modifier : com.gctn.tinkersarmorynirvana.api.ArmoryRegistry.modifiers().values()) {
                 if (ArmorData.level(stack, modifier.id) > 0) { event.getToolTip().add(net.minecraft.network.chat.Component.translatable("modifier." + modifier.id.replace(':', '.') + ".desc")); }
             }

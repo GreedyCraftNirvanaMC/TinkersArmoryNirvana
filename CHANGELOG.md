@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.21.1-1.0.9
+
+- Color material-trait names and descriptions using their actual source material in armor/part tooltips, Alt descriptions and workstation trait panels, replacing fixed cyan/purple colors.
+- Resolve duplicate-trait color provenance in core/plates/trim order, matching the original first-application behavior. Read current material colors so addon/KubeJS edits remain visible without a stale cache.
+- Record `EmbossedMaterial` for new embossments, preserving their trait color through saves. Existing embossments without source information retain their traits and use neutral gray when no base-part source is available.
+- Expose `ArmorData.traitMaterial` and `traitColor` for addon displays; trait levels, stacking and gameplay effects are unchanged.
+- Build/resource checks passed; dedicated-server verification passed 369 checks without KubeJS and 385 with the example scripts, including mixed colors, actual item tooltips, embossment provenance and KubeJS material colors. Client appearance remains pending manual acceptance.
+
 ## 1.21.1-1.0.8
 
 - Follow the supplied TinkersNirvana `BookScreen.section` and `BookContents.paper` hover implementation: use the `minecraft:uniform` font without added bold, retain its idle/hover text colors, highlight bounds and clickable caption extent, and keep icons opaque.

@@ -153,6 +153,7 @@ public final class ArmorySelfTest {
         ArmorEffects.begin(); ArmorEffects.end(fake);
         check(fake.getEffect(net.minecraft.world.effect.MobEffects.NIGHT_VISION).getDuration() == 3600, "Accessory cleanup preserves an independent night-vision potion");
         fake.removeEffect(net.minecraft.world.effect.MobEffects.NIGHT_VISION);
+        traitColors();
         addonExtensions();
         fake.setItemSlot(EquipmentSlot.CHEST, chest);
         AccessoryMenu bag = new AccessoryMenu(3, fake.getInventory(), EquipmentSlot.CHEST, "travel_sack");
@@ -171,6 +172,46 @@ public final class ArmorySelfTest {
         menuTransaction(fake);
         originalMenuInteractions(fake);
         nativePartBuilder(fake);
+    }
+
+    private void traitColors() {
+        var mixed = ArmorData.create(ArmoryContent.ARMORS.get("chestplate").get(), "manyullyn", "knightslime", "cactus");
+        check(ArmorData.traitMaterial(mixed, "vengeful").equals("manyullyn") && ArmorData.traitMaterial(mixed, "invigorating").equals("knightslime")
+                && ArmorData.traitMaterial(mixed, "spiny").equals("cactus"), "Mixed armor resolves trait sources from core, plates and trim independently");
+        check(ArmorData.traitColor(mixed, "vengeful") == (com.gctn.tconstruct.library.TinkerMaterials.manyullyn.color & 0xffffff)
+                && ArmorData.traitColor(mixed, "invigorating") == (com.gctn.tconstruct.library.TinkerMaterials.knightslime.color & 0xffffff)
+                && ArmorData.traitColor(mixed, "spiny") == (com.gctn.tconstruct.library.TinkerMaterials.cactus.color & 0xffffff), "Each material trait uses its own source material RGB color");
+        var tooltip = new java.util.ArrayList<Component>();
+        ((ModularArmorItem) mixed.getItem()).appendHoverText(mixed, net.minecraft.world.item.Item.TooltipContext.of(server.overworld()), tooltip, net.minecraft.world.item.TooltipFlag.NORMAL);
+        check(tooltip.get(3).getStyle().getColor().getValue() == ArmorData.traitColor(mixed, "vengeful")
+                && tooltip.get(4).getStyle().getColor().getValue() == ArmorData.traitColor(mixed, "invigorating")
+                && tooltip.get(5).getStyle().getColor().getValue() == ArmorData.traitColor(mixed, "spiny"), "Actual armor tooltips preserve distinct per-material trait colors");
+        var part = ArmoryContent.PARTS.get("armor_plate").get(); tooltip.clear();
+        part.appendHoverText(part.create("knightslime"), net.minecraft.world.item.Item.TooltipContext.of(server.overworld()), tooltip, net.minecraft.world.item.TooltipFlag.NORMAL);
+        check(tooltip.get(1).getStyle().getColor().getValue() == (com.gctn.tconstruct.library.TinkerMaterials.knightslime.color & 0xffffff), "Part tooltips use the part material's trait color");
+        var duplicate = ArmorData.create(ArmoryContent.ARMORS.get("helmet").get(), "alumite", "obsidian", "iron");
+        check(ArmorData.traitMaterial(duplicate, "duritos_ranch").equals("alumite"), "Repeated traits keep the first material source as in the original builder");
+        var material = com.gctn.tconstruct.library.TinkerMaterials.manyullyn; int previous = material.color;
+        try { material.color = 0xff123456; check(ArmorData.traitColor(mixed, "vengeful") == 0x123456, "Trait colors resolve current material edits instead of a stale cache"); }
+        finally { material.color = previous; }
+        var input = new SimpleContainer(6); input.setItem(0, ArmorData.create(ArmoryContent.ARMORS.get("helmet").get(), "wood", "iron", "iron"));
+        input.setItem(1, ArmoryContent.PARTS.get("armor_plate").get().create("cactus"));
+        String[] ingredients = {"tconstruct:slimecrystal_green", "tconstruct:slimecrystal_blue", "tconstruct:slimecrystal_magma", "minecraft:gold_block"};
+        for (int i = 0; i < ingredients.length; i++) { input.setItem(i + 2, new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(net.minecraft.resources.ResourceLocation.parse(ingredients[i])))); }
+        var emboss = plan(input);
+        check(emboss != null && ArmorData.read(emboss.result()).getString("EmbossedMaterial").equals("cactus")
+                && ArmorData.traitColor(emboss.result(), "spiny") == (com.gctn.tconstruct.library.TinkerMaterials.cactus.color & 0xffffff)
+                && !ArmorData.read(input.getItem(0)).contains("EmbossedMaterial"), "Real embossment previews record the new trait source without mutating the input");
+        var embossed = emboss.result(); var restored = ItemStack.parseOptional(server.registryAccess(), (CompoundTag) embossed.save(server.registryAccess()));
+        check(ArmorData.traitMaterial(restored, "spiny").equals("cactus") && ArmorData.traitColor(restored, "spiny") == ArmorData.traitColor(embossed, "spiny"), "Embossment source colors survive native disk serialization");
+        var legacy = ArmorData.read(embossed); legacy.remove("EmbossedMaterial"); ArmorData.write(embossed, legacy);
+        check(ArmorData.traits(embossed).containsKey("conarm:spiny") && ArmorData.traitColor(embossed, "spiny") == 0xaaaaaa, "Legacy embossment without source metadata retains its trait with a neutral fallback color");
+        check(ArmorData.traitMaterial(mixed, "unknown").isEmpty() && ArmorData.traitColor(mixed, "unknown") == 0xaaaaaa, "Unknown traits use a neutral fallback without inventing a material source");
+        if (Boolean.getBoolean("conarm.kubejsFixture")) {
+            var custom = armor("helmet", "example:amethyst");
+            check(ArmorData.traitMaterial(custom, "example:resolve").equals("example:amethyst") && ArmorData.traitColor(custom, "example:resolve") == 0xa77ce3,
+                    "KubeJS custom traits use the color of their actual registered material");
+        }
     }
 
     private void addonExtensions() {

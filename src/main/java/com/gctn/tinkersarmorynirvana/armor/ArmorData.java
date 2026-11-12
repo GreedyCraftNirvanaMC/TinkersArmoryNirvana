@@ -84,6 +84,25 @@ public final class ArmorData {
         return result;
     }
 
+    /** First material granting this trait, following core/plates/trim and then embossment; empty when unknown. */
+    public static String traitMaterial(ItemStack stack, String id) {
+        String key = ArmoryRegistry.id(id);
+        if (ArmoryRegistry.trait(key) == null) { return ""; }
+        var data = read(stack); String[] parts = {"Core", "Plates", "Trim"};
+        // 原版只在第一次加入词条时写入材料色；重复贡献可以改变等级，但不会覆盖首次来源的颜色。
+        for (int i = 0; i < parts.length; i++) {
+            var material = ArmoryRegistry.material(data.getString(parts[i]));
+            if (material == null) { continue; }
+            if (material.traits(i).stream().anyMatch(trait -> trait.id().equals(key))) { return material.id; }
+        }
+        return data.getCompound("EmbossedTraits").contains(key) ? data.getString("EmbossedMaterial") : "";
+    }
+    /** Current RGB color of the source material; neutral gray if old data does not retain its source. */
+    public static int traitColor(ItemStack stack, String id) {
+        var material = com.gctn.tconstruct.library.TinkerMaterials.getMaterial(traitMaterial(stack, id));
+        return material == null ? 0xaaaaaa : material.color & 0xffffff;
+    }
+
     public static void invoke(ItemStack stack, LivingEntity wearer, String hook, net.minecraft.world.damagesource.DamageSource source, float amount, ArmorStats stats) {
         for (var entry : traits(stack).entrySet()) {
             ArmoryRegistry.trait(entry.getKey()).invoke(hook, new ArmorContext(stack, wearer, entry.getKey(), entry.getValue(), source, amount, stats));

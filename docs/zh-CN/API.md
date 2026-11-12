@@ -116,11 +116,13 @@ ArmoryRegistry.registerModifier(new ArmorModifier("exampleaddon:amethyst_guard")
 
 `ArmorData.create(ModularArmorItem, core, plates, trim)` 构建护甲，`ArmorPartItem.create(material)` 构建部件。内置物品供应器位于 `ArmoryContent.ARMORS/PARTS`。内置组装仅支持四个人形护甲槽。
 
-`ArmorData.read(stack)` 返回 `conarm:armor` 持久组件的副本，保存版本、`Core/Plates/Trim`、`Modifiers`（ID→点数）、`State`（ID→状态）、`Disabled`、可选抛光／浮雕与修复／升级记录。修改后通过 `ArmorData.write` 写回。不得直接修改共享组件或别人的预览物品。
+`ArmorData.read(stack)` 返回 `conarm:armor` 持久组件的副本，保存版本、`Core/Plates/Trim`、`Modifiers`（ID→点数）、`State`（ID→状态）、`Disabled`、可选抛光／刻印（`EmbossedTraits`、`EmbossedMaterial`）、修复次数和命名空间 `Extensions` 数据。修改后通过 `ArmorData.write` 写回。不得直接修改共享组件或别人的预览物品。
 
 `ArmorStorage` 单独管理 `conarm:storage`。其 `Inventories` 下分别保存 `travel_sack`、`potion_belt`、`travel_belt`，编号槽位使用 Minecraft 原生带注册表的 ItemStack 序列化。将库存分开可以避免频繁属性计算复制整个背包。两个组件都通过原生编码器保存与同步。
 
 通过 `ArmorData.rebuild/damage/repair/level/points/freeSlots/traits/broken` 操作装备，不要重复实现伤害逻辑。损坏装备停止提供属性与主动能力，但保留物品和库存；修复后恢复。支持铁砧命名，关闭普通附魔、双装备铁砧修复和原版双物品修复配方，以维持工作台强化流程并避免吞掉带库存的护甲。
+
+自 1.21.1-1.0.9 起，`ArmorData.traitMaterial(stack, id)` 返回词条首次来源的规范材料 ID，依次检查核心、护甲板、夹板，最后检查刻印；未知来源返回空字符串。`traitColor(stack, id)` 返回该材料当前的 24 位 RGB 色，来源未知时为中性灰 `0xaaaaaa`。词条 ID 可用短名或完整命名空间。两个方法不改变词条等级和叠加规则。新刻印保存 `EmbossedMaterial`，旧物品缺少该记录时不猜测来源。护甲／部件提示和工作台词条栏使用来源色；手册保留原版深色下划线正文及材料色悬停描述。
 
 ## 附属数据与全局属性计算
 

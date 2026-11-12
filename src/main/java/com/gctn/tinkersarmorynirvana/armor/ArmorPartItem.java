@@ -36,6 +36,6 @@ public class ArmorPartItem extends Item {
         if (type == 0) { tooltip.add(Component.translatable("tooltip.conarm.core_stats", definition.coreDurability, definition.defense)); }
         else if (type == 1) { tooltip.add(Component.translatable("tooltip.conarm.plate_stats", definition.plateMultiplier, definition.plateDurability, definition.toughness)); }
         else { tooltip.add(Component.translatable("tooltip.conarm.trim_stats", definition.trimDurability)); }
-        for (var trait : definition.traits(type)) { tooltip.add(Component.translatable("trait." + trait.id().replace(':', '.') + ".name").append(trait.level() > 1 ? " " + trait.level() : "")); }
+        for (var trait : definition.traits(type)) { tooltip.add(Component.translatable("trait." + trait.id().replace(':', '.') + ".name").append(trait.level() > 1 ? " " + trait.level() : "").withColor(color(stack) & 0xffffff)); }
     }
 }

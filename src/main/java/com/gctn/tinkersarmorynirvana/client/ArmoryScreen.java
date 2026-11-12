@@ -62,7 +62,12 @@ public class ArmoryScreen extends AbstractContainerScreen<ArmoryMenu> {
             rows.add(new ArmoryInfoPanel.Row(Component.translatable("stat.core.defense.name").append(": ").append(Component.literal(number(stats.defense)).withColor(0xd76464))));
             rows.add(new ArmoryInfoPanel.Row(Component.translatable("stat.plates.toughness.name").append(": ").append(Component.literal(number(stats.toughness)).withColor(0x78a0cd))));
             if (ArmorData.freeSlots(shown) > 0) { rows.add(new ArmoryInfoPanel.Row(Component.translatable("gui.conarm.remaining_modifiers", ArmorData.freeSlots(shown)))); }
-            ArmorData.traits(shown).forEach((id, level) -> traits.add(new ArmoryInfoPanel.Row(Component.translatable("trait." + id.replace(':', '.') + ".name").append(level > 1 ? " " + level : "").withColor(0xa065cf), Component.translatable("trait." + id.replace(':', '.') + ".desc"))));
+            ArmorData.traits(shown).forEach((id, level) -> {
+                int color = ArmorData.traitColor(shown, id);
+                var name = Component.translatable("trait." + id.replace(':', '.') + ".name").append(level > 1 ? " " + level : "").withColor(color);
+                var description = Component.translatable("trait." + id.replace(':', '.') + ".desc").withColor(color);
+                traits.add(new ArmoryInfoPanel.Row(name, description));
+            });
             for (var modifier : ArmoryRegistry.modifiers().values()) {
                 if (ArmorData.level(shown, modifier.id) > 0) { traits.add(new ArmoryInfoPanel.Row(Component.translatable("modifier." + modifier.id.replace(':', '.') + ".name").withColor(0xa065cf), Component.translatable("modifier." + modifier.id.replace(':', '.') + ".desc"))); }
             }
