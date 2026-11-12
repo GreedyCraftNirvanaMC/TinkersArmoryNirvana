@@ -7,7 +7,7 @@ TinkersArmoryNirvana is a source port of **AntiqueArmory / Construct's Armory** 
 - Port implementation: Copyright (C) 2026 GreedyCraftNirvanaMC contributors, **LGPL-3.0-or-later**.
 - The original armor material values, trait/modifier behavior, Tabula armor/accessory geometry, textures, translations and book resources are adapted or retained from that source. Original resource names and the `conarm` content namespace are retained where applicable.
 - TinkersNirvana supplies the material, material-input, smeltery, fluid and native workshop APIs. Its JAR is a separate required dependency and is not embedded in this distribution. See its own notices and license for its source and its TinkersAntique/Mantle adaptations.
-- The 1.12 Mantle source was used as an API reference. This project does not bundle a second Mantle implementation or require the 1.12 Mantle JAR.
+- The supplied Mantle 1.12 source provides the original book/paper/cover/navigation textures and the 206×200 leaf layout used by the modern Armory manual. Mantle is Copyright (c) 2013–2014 Slime Knights and licensed under MIT; the complete notice is retained in `licenses/Mantle-MIT.txt`. This project does not require the 1.12 Mantle JAR.
 - The original MDK template license remains in `TEMPLATE_LICENSE.txt`.
 
 `LICENSE` preserves the original license grant. Complete LGPLv3 and GPLv3 texts are provided in `licenses/`. Modified source is distributed in this repository and in the generated sources JAR. Retain these notices when redistributing or adapting this port and follow the LGPL's source and relinking requirements.

@@ -9,7 +9,7 @@
 ```groovy
 dependencies {
     implementation files('libs/TinkersNirvana-1.21.1-1.0.1.jar')
-    implementation files('libs/TinkersArmoryNirvana-1.21.1-1.0.0.jar')
+    implementation files('libs/TinkersArmoryNirvana-1.21.1-1.0.1.jar')
 }
 ```
 
@@ -137,3 +137,7 @@ ArmoryRegistry.registerModifier(new ArmorModifier("exampleaddon:amethyst_guard")
 `ArmorVisuals.register(modifierId, textureId, color, geometry)` 必须在模组构造阶段、护甲材质注册前调用，并在两物理端一致注册。纹理不写 `textures/` 和 `.png`，例如 `exampleaddon:models/modifiers/rune`。几何类型为 `armor/belt/sack/goggles/cloak`，应匹配原有 UV 布局。仅客户端类必须隔离在客户端订阅器中。内置物品图标按原贴图层组合，资源重载时重建模型缓存。
 
 翻译键为 `trait.<namespace>.<path>.name/.desc`、`modifier.<namespace>.<path>.name/.desc` 及常规物品翻译键。宝典读取当前定义，因此附属注册的内容也能进入手册。
+
+手册每次打开时，从这些注册表生成章节索引、材料／词条链接与护甲预览。强化图示直接读取当前 `conarm:armor_modifier` 配方，因此附属和 KubeJS 无需额外硬编码书内配方。长内容自动续页；配方或资源重载后，关闭再打开手册以重新生成页面。可通过资源包覆盖 `assets/conarm/book/<语言>/intro/welcome.json` 替换欢迎页，缺失时回退英文。书本、纸张与导航纹理沿用 Mantle，并附有完整 MIT 许可。
+
+物品模型优先使用 1.21 的 `textures/item/`、`textures/block/` 路径；采用其它目录时，必须在 `assets/minecraft/atlases/blocks.json` 显式声明 sprite 来源。仅有 PNG 文件并不保证模型能够显示，目标图集也必须收集它。穿戴护甲纹理与 GUI 纹理直接加载，不需要加入方块图集。

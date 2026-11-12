@@ -25,6 +25,8 @@ JEI integration is deferred: the supplied TinkersNirvana port has no implemented
 
 Only one traveller accessory can be installed on each armor item. Gauntlets require a chestplate and are mutually exclusive. Frostwalking/high stride/glowing require boots; amphibious requires a helmet. Resistance types conflict; additional levels of the selected resistance type consume no additional slots. The in-game Armory Addendum shows current material and modifier definitions, including addon content.
 
+Open the Armory Addendum's cover to reach its chapter directory. Material, trait, modifier and accessory entries have clickable indexes, item tooltips and links between related pages. Modifier diagrams read the world's current workshop recipes, including datapack/KubeJS changes. Use the page arrows, mouse wheel or Left/Right keys to turn spreads, Home for the directory, and Backspace to return after following a link. The last spread is remembered for the current client session. Long entries continue on further pages.
+
 In this port armor patterns are processed by the Armor Station/Forge, rather than the dependency's part-builder screen. Existing modular armor and armor patterns also work in the native Tinkers tool-station processing mode. The material registry and smeltery are shared with TinkersNirvana.
 
 ## Building

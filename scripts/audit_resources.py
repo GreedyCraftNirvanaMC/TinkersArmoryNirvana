@@ -12,6 +12,21 @@ RES = ROOT / "src/main/resources"
 def main(tinkers):
     owners = {"conarm": RES, "tconstruct": tinkers / "src/main/resources"}
     failures = []
+    # 检查图集中的逻辑 sprite ID，而不只检查 PNG 是否存在；旧版复数路径不会自动拼入新版图集。
+    atlas_sprites = set()
+    sources = [{"type": "minecraft:directory", "source": name, "prefix": name + "/"} for name in ["item", "block"]]
+    for owner in owners.values():
+        atlas = owner / "assets/minecraft/atlases/blocks.json"
+        if atlas.exists():
+            sources.extend(json.loads(atlas.read_text(encoding="utf-8"))["sources"])
+    for source in sources:
+        if source["type"] == "minecraft:single":
+            atlas_sprites.add(source.get("sprite", source["resource"]))
+        elif source["type"] == "minecraft:directory":
+            for namespace, owner in owners.items():
+                directory = owner / f"assets/{namespace}/textures" / source["source"]
+                for png in directory.rglob("*.png"):
+                    atlas_sprites.add(namespace + ":" + source["prefix"] + png.relative_to(directory).with_suffix("").as_posix())
     count = 0
     for path in RES.rglob("*.json"):
         try:
@@ -27,6 +42,8 @@ def main(tinkers):
                 namespace, name = value.split(":", 1) if ":" in value else ("minecraft", value)
                 if namespace in owners and not (owners[namespace] / f"assets/{namespace}/textures/{name}.png").is_file():
                     failures.append(f"{path.relative_to(ROOT)}: missing texture {value}")
+                if namespace == "conarm" and value not in atlas_sprites:
+                    failures.append(f"{path.relative_to(ROOT)}: texture is not collected by the blocks atlas: {value}")
             parent = data.get("parent", "")
             if ":" in parent:
                 namespace, name = parent.split(":", 1)
@@ -57,6 +74,11 @@ def main(tinkers):
         required.update(key for key in re.findall(r'Component\.translatable\("([^"]+)"', path.read_text(encoding="utf-8"))
                         if not key.endswith(".") and key != "book.conarm.intro" and key.startswith(("item.conarm.", "gui.conarm.", "tooltip.conarm.", "message.conarm.", "book.conarm.")))
     required.update(f"book.conarm.intro{index}" for index in range(1, 6))
+    for path in (java / "client").glob("ArmoryBook*.java"):
+        required.update("book.conarm." + key for key in re.findall(r'\btext\("([^"]+)"', path.read_text(encoding="utf-8")) if not key.endswith("."))
+    required.update("book.conarm.section." + section for section in ["welcome", "armory", "materials", "traits", "modifiers", "accessories"])
+    required.update("book.conarm.part." + part for part in ["core", "plates", "trim"])
+    required.update("book.conarm." + key for key in ["previous", "next", "contents", "back", "open"])
     traits_source = (java / "armor/BuiltinTraits.java").read_text(encoding="utf-8")
     modifiers_source = (java / "armor/BuiltinModifiers.java").read_text(encoding="utf-8")
     traits = set(re.findall(r'trait\("([a-z_]+)"\)', traits_source)) | {"slimey_green", "slimey_blue"}

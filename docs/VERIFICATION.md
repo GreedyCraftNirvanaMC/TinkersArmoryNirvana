@@ -2,14 +2,15 @@
 
 The runtime targets Java 21, Minecraft 1.21.1 and NeoForge 21.1.265. The baseline dependency is the locally built `TinkersNirvana-1.21.1-1.0.1.jar`. Client visual/interaction acceptance is intentionally left to the user, as requested. A dedicated-server check does not establish how the real client looks, sounds or responds to input.
 
-## Recorded results — 2026-11-12
+## Recorded results — 1.21.1-1.0.1, 2026-11-12
 
 | Check | Result |
 | --- | --- |
 | Gradle build, runtime and sources JARs | Passed |
 | Dedicated server without KubeJS | 287 assertions passed |
 | Dedicated server with KubeJS build.381 and the supplied example scripts | 301 assertions passed; startup/server scripts loaded without errors or warnings |
-| Static resource audit | 524 JSON files and 177 required English/Chinese translation keys checked; passed |
+| Static resource audit | 525 JSON files and 208 required English/Chinese translation keys checked; passed |
+| Missing-atlas regression check | Removing the atlas declaration makes the audit fail on 211 affected model/texture references; restoring it passes |
 | Real-client rendering, screens, input and audio | Pending manual acceptance by the user |
 
 Generated server reports are `build/reports/armory-selftest-without-kubejs.md` and `build/reports/armory-selftest-with-kubejs.md`. Reports and game logs are local build artifacts and are not committed. No Minecraft client was launched for these results.
@@ -67,13 +68,17 @@ python -X utf8 scripts/audit_resources.py --tinkers C:/path/to/TinkersNirvana-1.
 
 The audit checks JSON, owned model/texture references, item recipe references against the built dependency, and required English/Chinese keys. This does not replace resource baking or screenshots from a real client.
 
+Model textures must also be collected by the target atlas. Minecraft 1.21's default blocks atlas scans `textures/item/` and `textures/block/`, whereas this port retains legacy `textures/items/` and `textures/blocks/` resource IDs. `assets/minecraft/atlases/blocks.json` explicitly collects the retained directories. The audit now checks this relationship; a PNG's presence alone is insufficient. The original 1.0.0 client log confirmed missing atlas sprites even though the old file-existence check passed.
+
 ## 客户端手动验收
 
 1. 两端安装同版本的本模组与 TinkersNirvana。进入测试世界，确认创造栏中的护甲、部件、模具和宝典正常显示，没有紫黑贴图。
+   使用 `1.21.1-1.0.1` 替换旧版，勿同时保留两个版本。重新启动客户端后检查，不以旧进程中的资源缓存判断修复结果。确认日志不再出现 `Missing textures in model conarm:`。
 2. 用护甲模具加工木质部件，再用不同材料组装一件护甲；观察预览人偶、实际穿戴和物品图标。取消／关闭界面时不应扣料或产生额外成品；Shift 取出后应只扣一次。
 3. 测试修复、换部件、抛光和浮雕；放入错误核心、无关原料或冲突强化时不应产生可取出的结果。把护甲用坏后应保留物品，修复后恢复防护。
 4. 安装旅行配件后按 G。测试腰带交换、药水腰带与背包的存取、关闭重开、脱装和重新登录；物品应保留且不能把带库存的护甲套进自身。
 5. 分别测试缩放、夜视、灵魂视野、隐身与缓降的开关。脱装、损坏或关闭功能后，本模组施加的状态应清理，普通药水效果应保留。确认附近实体的灵魂标记、护目镜／披风／背包模型位置与声效。
 6. 测试弹跳、潜浮、高步和冰霜行者；确认移动、落地、冰面与不稳定黑曜石消退表现。多人同时操作同一工作台时不应复制物品。
+7. 打开宝典，确认首次显示原版风格的封面，打开后是双页书本。点击章节目录、材料／词条链接和返回箭头；测试左右方向键、滚轮、Home 与 Backspace。材料页应显示部件词条和护甲预览，强化页应显示当前配方、原料数量及物品提示。改变 GUI 缩放后内容应留在书页内，长条目应续页显示。资源或配方重载后，关闭再打开手册以更新内容。
 
 These are the remaining manual acceptance checks, not claims of automated client verification.

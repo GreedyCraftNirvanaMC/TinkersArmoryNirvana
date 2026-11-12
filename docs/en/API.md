@@ -25,7 +25,7 @@ side = "BOTH"
 ```groovy
 dependencies {
     implementation files('libs/TinkersNirvana-1.21.1-1.0.1.jar')
-    implementation files('libs/TinkersArmoryNirvana-1.21.1-1.0.0.jar')
+    implementation files('libs/TinkersArmoryNirvana-1.21.1-1.0.1.jar')
 }
 ```
 
@@ -140,3 +140,7 @@ Use `ArmorData.rebuild`, `damage`, `repair`, `level`, `points`, `freeSlots`, `tr
 `ArmorVisuals.register(modifierId, textureId, color, geometry)` registers a worn overlay during mod construction, before the armor-material registry is built. `textureId` omits `textures/` and `.png`, for example `exampleaddon:models/modifiers/rune`. Geometry is `armor`, `belt`, `sack`, `goggles` or `cloak`; use the matching original UV layout. Register visuals on both physical sides. Client-only classes must remain in client subscribers. Builtin icon composition uses the original sprite layers and is recreated on resource reload.
 
 Translation keys are `trait.<namespace>.<path>.name/.desc`, `modifier.<namespace>.<path>.name/.desc`, and ordinary item keys. The manual reads current definitions. API compatibility is source-level for this port; the old `c4.conarm`/Forge 1.12 ABI is not retained.
+
+The manual builds its chapter indexes, material/trait links and armor previews from these registries when opened. Modifier diagrams use the current native `conarm:armor_modifier` recipes, so addons and KubeJS need no separate hardcoded book recipe. Long content is paginated. Reopen the book after a recipe or resource reload to rebuild its pages. The original welcome page can be overridden at `assets/conarm/book/<language>/intro/welcome.json`, with English fallback. Book/paper/navigation sprites are retained from Mantle under the included MIT notice.
+
+For item models, use Minecraft 1.21's `textures/item/` and `textures/block/` directories or explicitly add your sprite sources to `assets/minecraft/atlases/blocks.json`. A model's PNG can exist and still render as missing when the target atlas does not collect it. Direct worn-armor textures and GUI textures are loaded separately and do not need blocks-atlas entries.

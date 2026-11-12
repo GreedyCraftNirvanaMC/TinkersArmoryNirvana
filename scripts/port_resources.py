@@ -67,6 +67,11 @@ def main(legacy):
     assets = RESOURCES / "assets/conarm"
     for directory in ["textures", "book"]:
         shutil.copytree(source / directory, assets / directory, dirs_exist_ok=True)
+    # 1.21 默认图集只收集 item/block；保留旧资源 ID 时必须显式收集 items/blocks。
+    write("assets/minecraft/atlases/blocks.json", {"sources": [
+        {"type": "minecraft:directory", "source": "items", "prefix": "items/"},
+        {"type": "minecraft:directory", "source": "blocks", "prefix": "blocks/"},
+    ]})
     for book_json in (assets / "book").rglob("*.json"):
         text = re.sub(r'("coverColor"\s*:\s*)0x([0-9a-fA-F]+)', lambda match: match[1] + str(int(match[2], 16)), book_json.read_text(encoding="utf-8"))
         book_json.write_text(json.dumps(json.loads(text), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -176,7 +181,7 @@ def generate_languages(source):
             if key.startswith("tile.conarm.") and key.endswith(".name"):
                 result[key.replace("tile.", "block.")[:-5]] = value
         for kind, names in [("trait", traits), ("modifier", modifiers)]:
-            for name in names:
+            for name in sorted(names):
                 legacy = "slimey" if name.startswith("slimey_") else name
                 for suffix in ["name", "desc"]:
                     value = data.get(f"modifier.{legacy}_armor.{suffix}", data.get(f"modifier.{legacy}.{suffix}", name.replace("_", " ").title()))
@@ -204,7 +209,7 @@ def generate_languages(source):
             "diamond": ("Adds durability, defense and toughness.", "增加耐久、防御和韧性。"),
             "extramodifier": ("A dragon head grants one additional modifier slot, once per armor item.", "消耗龙首为这件护甲增加一个强化槽，仅可应用一次。")}
         for kind, identifiers in [("trait", traits), ("modifier", modifiers)]:
-            for identifier in identifiers:
+            for identifier in sorted(identifiers):
                 if identifier in names:
                     result[f"{kind}.conarm.{identifier}.name"] = names[identifier][path.stem == "zh_cn"]
                 if identifier in descriptions:
@@ -241,6 +246,38 @@ def extra_translations(chinese):
         "message.conarm.enabled": ("%s enabled", "%s已启用"), "message.conarm.disabled": ("%s disabled", "%s已关闭"),
         "message.conarm.level_up": ("%s reached level %s!", "%s已升到%s级！"),
         "tooltip.conarm.level": ("Level %s — XP %s / %s", "等级%s　经验%s / %s"),
+        "book.conarm.cover.title": ("Armory\nAddendum", "盔甲锻造\n手册"),
+        "book.conarm.cover.subtitle": ("C4 · Nirvana", "C4 · 涅槃"),
+        "book.conarm.contents": ("Contents", "目录"),
+        "book.conarm.section.welcome": ("Welcome", "欢迎"),
+        "book.conarm.section.armory": ("Making armor", "护甲锻造"),
+        "book.conarm.section.materials": ("Armor materials", "护甲材料"),
+        "book.conarm.section.traits": ("Material traits", "材料词条"),
+        "book.conarm.section.modifiers": ("Armor modifiers", "护甲强化"),
+        "book.conarm.section.accessories": ("Traveller accessories", "旅行配件"),
+        "book.conarm.stations": ("Armor workshops", "护甲工作台"),
+        "book.conarm.parts": ("Armor parts and casts", "部件与铸模"),
+        "book.conarm.armor": ("Modular armor", "模块化护甲"),
+        "book.conarm.repair": ("Repair and replacement", "修复与替换"),
+        "book.conarm.finishing": ("Polishing and embossment", "抛光与浮雕"),
+        "book.conarm.controls": ("Using accessories", "使用配件"),
+        "book.conarm.assembly": ("A core, plates and trim form each armor piece. Put them in the top row of the Armor Station in that order. Each part can use a different material. Move the mouse over the preview to inspect the armor.", "每件护甲由核心、护甲板与夹板组成。在装甲装配台上排依次放入这三种部件即可组装，不同部件可以使用不同材料。移动鼠标可以观察预览人偶。"),
+        "book.conarm.part.core": ("Core traits", "核心词条"),
+        "book.conarm.part.plates": ("Plate traits", "护甲板词条"),
+        "book.conarm.part.trim": ("Trim traits", "夹板词条"),
+        "book.conarm.modifier.levels": ("Maximum level: %s\nPoints per level: %s", "最高等级：%s\n每级材料点数：%s"),
+        "book.conarm.modifier.slots": ("Slots: %s for the first level; %s for each further level.", "首级消耗%s个强化槽；后续每级消耗%s个。"),
+        "book.conarm.modifier.equipment": ("Equipment: %s", "可用护甲：%s"),
+        "book.conarm.modifier.conflict": ("Incompatible: %s", "不兼容：%s"),
+        "book.conarm.recipe.points": ("Workshop recipe · %s point(s)", "工作台配方 · 每次%s点"),
+        "book.conarm.recipe.none": ("No workshop recipe is available in the current pack.", "当前整合包未提供此强化的工作台配方。"),
+        "book.conarm.recipe.missing": ("No matching ingredient is available.", "没有可用的匹配原料。"),
+        "book.conarm.accessory.controls": ("Install this accessory, equip the armor, then use the accessory key (G by default) to open its controls.", "安装配件并穿戴护甲后，按配件控制键（默认 G）打开操作菜单。"),
+        "book.conarm.continued": ("%s (continued)", "%s（续）"),
+        "book.conarm.previous": ("Previous spread", "上一页"),
+        "book.conarm.next": ("Next spread", "下一页"),
+        "book.conarm.back": ("Return to previous location", "返回跳转前的位置"),
+        "book.conarm.open": ("Open the book", "打开手册"),
         "book.conarm.intro1": ("Welcome to the Armory Addendum. Make an Armor Station from a crafting table and four blank Tinkers patterns. Convert one blank pattern to an armor pattern in a crafting grid. Right-click the pattern to choose a part; sneak to cycle backwards.", "欢迎阅读《匠魂宝典：盔甲补充》。用工作台和四个匠魂空白模具制作装甲装配台。在合成栏将一个空白模具转换为护甲模具。手持护甲模具右键切换部件，潜行时反向切换。"),
         "book.conarm.intro2": ("Place an armor pattern in the first station slot and matching craftable raw materials after it. Core costs: helmet 4, chest 6, leggings 5, boots 4. Plates cost 3, trim 1, polishing kits 2. Castable metals use the smeltery: pour gold or aluminum brass over a part to make its cast.", "首格放护甲模具，其余格放可加工原料。头盔、胸甲、护腿、靴子的核心分别需4、6、5、4份材料；护甲板3份，夹板1份，抛光磨具2份。金属使用冶炼炉浇筑：在部件上浇注金或铝黄铜制作铸模。"),
         "book.conarm.intro3": ("Assemble armor with its core, plates and trim in the three top slots, in that order. Materials can differ. Repairs use the core material or a matching polishing kit. Replace parts by putting the armor first and the new parts after it. Broken armor stays intact and can be repaired.", "在上排依次放入核心、护甲板、夹板组装护甲，三种材料可以不同。首格放护甲，其余格放核心原料或同材质抛光磨具进行修复；放入新部件可替换材料。损坏的护甲会保留，修复后恢复防护。"),
