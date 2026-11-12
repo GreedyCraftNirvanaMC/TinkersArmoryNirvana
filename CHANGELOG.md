@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.21.1-1.0.7
+
+- Match the chapter-label hover reference: gray regular text when idle, black bold text when hovered, with full icon/text opacity in both states. Center labels using the styled text width and keep the stored label unchanged.
+
 ## 1.21.1-1.0.6
 
 - Keep both chapter icons and labels fully opaque in idle and hovered states, with a fixed label color. Only the hover background changes.
