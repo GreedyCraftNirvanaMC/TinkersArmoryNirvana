@@ -73,6 +73,10 @@ public final class ArmoryBookScreen extends Screen {
         updateButtons();
     }
     private void back() { if (returnSpread >= -1) { spread = returnSpread; } returnSpread = -2; updateButtons(); }
+    @Override public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+        // Screen.render 会在绘制控件前调用此方法。书页已经画好，不能再执行原生的全屏模糊。
+        // 旧 GuiBook 保留清晰的游戏背景，所以这里也不额外叠加背景效果。
+    }
     @Override public void render(GuiGraphics graphics, int mouseX, int mouseY, float partial) {
         // GuiBook 原版不对世界加模糊或暗幕；只绘制书本与控件。
         hits.clear(); float mx = (mouseX - left) / scale, my = (mouseY - top) / scale;

@@ -100,12 +100,18 @@ def main(legacy):
             textures = {"layer0": "conarm:" + texture} if (source / f"textures/{texture}.png").exists() else {}
             write(f"assets/conarm/models/item/dynamic/{armor}/mod_{visual}.json", {"parent": "minecraft:item/generated", "textures": textures})
     # 直接保留原工作台网格，只转换新版纹理路径与方块状态格式。
-    table_model = json.loads((source / "models/block/armorforge.json").read_text(encoding="utf-8"))
     for name in ["armorstation", "armorforge"]:
-        model = json.loads(json.dumps(table_model))
-        base = "oak_planks" if name == "armorstation" else "iron_block"
-        model["textures"].update({"particle": f"conarm:blocks/{name}_top", "top": f"conarm:blocks/{name}_top",
-                                  "bottom": f"minecraft:block/{base}", "leg": f"minecraft:block/{base}", "legBottom": f"minecraft:block/{base}"})
+        model = json.loads((source / f"models/block/{name}.json").read_text(encoding="utf-8"))
+        if name == "armorstation":
+            # 木台保留原有匠魂桌面与桌腿，不复用更薄的金属锻造台网格。
+            model["textures"].update({"side": "tconstruct:block/table_side", "leg": "tconstruct:block/table_side",
+                                      "bottom": "minecraft:block/oak_planks", "legBottom": "minecraft:block/oak_planks"})
+            # 新依赖将桌腿底部纹理变量改成了 snake_case；父模型中的 #leg_bottom 必须实际绑定。
+            model["textures"]["leg_bottom"] = model["textures"].pop("legBottom")
+        else:
+            # 原 forge:default-block 由旧 blockstate 注入；新版通过父模型继承物品的 GUI／手持变换。
+            model["parent"] = "minecraft:block/block"
+            model["textures"].update({key: "minecraft:block/iron_block" for key in ["bottom", "leg", "legBottom"]})
         write(f"assets/conarm/models/block/{name}.json", model)
         write(f"assets/conarm/models/item/{name}.json", {"parent": f"conarm:block/{name}"})
         write(f"assets/conarm/blockstates/{name}.json", {"variants": {f"facing={direction}": {"model": f"conarm:block/{name}", "y": angle}

@@ -149,3 +149,5 @@ ArmoryRegistry.registerModifier(new ArmorModifier("exampleaddon:amethyst_guard")
 `ArmoryWorkshop.plan(input, level, allowModifiers)` 的布尔参数限制内置强化配方、抛光与刻印，普通装配台传 false；原双参数重载保持允许这些操作。附属规划器仍优先执行，需自行定义其操作的额外进度规则。`rename(input, name)` 可以生成不含其他投入物的纯命名计划。
 
 `ArmoryMenu` 的菜单槽编号为：产物 0、六个输入 1–6、玩家库存 7–42；容器输入本身仍按 0–5 索引。标签 0 是修复，1–4 分别是头盔、胸甲、护腿、靴子，由服务端校验的原生菜单按钮切换。`ArmoryStationLayout` 提供坐标和匹配部件类型。分解预览不是真实输入物品，原护甲在首个部件被取走时才消耗；不要绕过方块实体直接提交预览或修改所有权。
+
+`ArmoryMaterialItems`（自 1.21.1-1.0.3 提供）在构造时快照当前材料原料。`representative(material)` 返回独立的单个物品，优先取材料显式指定的代表物品，否则与依赖宝典一样依次优先选择锭、一份材料价值的原料。材料目录和详情侧栏使用同一选择结果。附属／KubeJS 可在依赖的材料定义中调用 `.representativeItem("命名空间:物品")` 明确指定代表物品。标签或原料重载后需新建目录，不应把快照做成永久全局缓存。

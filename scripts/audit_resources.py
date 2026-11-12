@@ -49,6 +49,37 @@ def main(tinkers):
                 namespace, name = parent.split(":", 1)
                 if namespace in owners and not (owners[namespace] / f"assets/{namespace}/models/{name}.json").is_file():
                     failures.append(f"{path.relative_to(ROOT)}: missing parent {parent}")
+    # 3D 工作台不能只检查 PNG：父链还必须继承物品显示变换，否则手持模型会以整块大小贴到玩家前方。
+    for table in ["armorstation", "armorforge"]:
+        parent = f"conarm:item/{table}"
+        visited = set()
+        textures, elements = {}, None
+        while parent != "minecraft:block/block" and parent not in visited:
+            visited.add(parent)
+            namespace, name = parent.split(":", 1)
+            path = owners.get(namespace, RES) / f"assets/{namespace}/models/{name}.json"
+            if not path.exists():
+                failures.append(f"{table}: missing item model parent {parent}")
+                break
+            model = json.loads(path.read_text(encoding="utf-8"))
+            for key, value in model.get("textures", {}).items():
+                textures.setdefault(key, value)
+            if elements is None and "elements" in model:
+                elements = model["elements"]
+            if all(key in model.get("display", {}) for key in ["gui", "thirdperson_righthand", "firstperson_righthand"]):
+                break
+            parent = model.get("parent", "")
+            if ":" not in parent:
+                failures.append(f"{table}: missing inherited 3D item display transforms")
+                break
+        else:
+            if parent != "minecraft:block/block":
+                failures.append(f"{table}: cyclic item model parent chain")
+        for element in elements or []:
+            for face in element.get("faces", {}).values():
+                reference = face.get("texture", "")
+                if reference.startswith("#") and reference[1:] not in textures:
+                    failures.append(f"{table}: unbound inherited model texture {reference}")
     registry = ROOT / "build/reports/armory-item-registry.json"
     known_items = set(json.loads(registry.read_text(encoding="utf-8"))) if registry.exists() else None
     for path in (RES / "data/conarm/recipe").rglob("*.json"):

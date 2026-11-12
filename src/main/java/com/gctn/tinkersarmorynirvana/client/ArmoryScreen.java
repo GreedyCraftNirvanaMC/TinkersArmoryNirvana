@@ -100,9 +100,16 @@ public class ArmoryScreen extends AbstractContainerScreen<ArmoryMenu> {
         var pose = graphics.pose(); pose.pushPose(); pose.translate(10, 22, 0); pose.scale(3.7F, 3.7F, 1);
         if (menu.selection() == 0) { graphics.blit(ICONS, (int) (leftPos / 3.7F), (int) (topPos / 3.7F), 54, 0, 18, 18); }
         else { graphics.renderFakeItem(demo(ArmoryStationLayout.ARMOR[menu.selection() - 1]), (int) (leftPos / 3.7F), (int) (topPos / 3.7F)); }
-        pose.popPose(); graphics.setColor(1, 1, 1, .82F); blend(); graphics.blit(BACKGROUND, leftPos + 7, topPos + 18, 176, 18, 80, 64); graphics.setColor(1, 1, 1, 1);
+        pose.popPose(); overlay(graphics, .82F); graphics.blit(BACKGROUND, leftPos + 7, topPos + 18, 176, 18, 80, 64); overlay(graphics, 1);
         if (menu.selection() == 0 && (menu.deconstructing() || menu.emptyInputs())) { graphics.blit(BACKGROUND, leftPos + 82, topPos + 38, 8, 241, 8, 15); }
         if (!menu.deconstructing()) { graphics.blit(BACKGROUND, leftPos + 104, topPos + 38, 0, 241, 8, 15); }
+        // 先画原版半透明槽底，再画不透明边框；两层不能合并成只画边框。
+        for (int i = 0; i < ArmoryStationLayout.activeSlots(menu.selection()); i++) {
+            var slot = menu.getSlot(i + 1);
+            overlay(graphics, menu.deconstructing() && !slot.hasItem() ? .58F : .28F);
+            graphics.blit(BACKGROUND, leftPos + slot.x - 1, topPos + slot.y - 1, 176, 0, 18, 18);
+        }
+        overlay(graphics, 1);
         for (int i = 0; i < 6; i++) {
             var slot = menu.getSlot(i + 1); if (!slot.isActive()) { continue; }
             graphics.blit(BACKGROUND, leftPos + slot.x - 1, topPos + slot.y - 1, 194, 0, 18, 18);
@@ -127,6 +134,7 @@ public class ArmoryScreen extends AbstractContainerScreen<ArmoryMenu> {
                     (float) Math.atan((leftPos - 58F - mouseX) / 40F),
                     (float) Math.atan((topPos + 61F - mouseY) / 40F), mannequin);
         }
+        com.mojang.blaze3d.systems.RenderSystem.enableDepthTest();
     }
     private static void beam(GuiGraphics graphics, int x, int y, int width, int v) {
         blend();
@@ -135,7 +143,14 @@ public class ArmoryScreen extends AbstractContainerScreen<ArmoryMenu> {
         graphics.blit(BACKGROUND, x + width - 2, y, 131, v, 2, 7);
     }
     private static void blend() { com.mojang.blaze3d.systems.RenderSystem.enableBlend(); com.mojang.blaze3d.systems.RenderSystem.defaultBlendFunc(); }
-    private static final class PreviewPlayer extends net.minecraft.client.player.RemotePlayer {
+    private static void overlay(GuiGraphics graphics, float alpha) {
+        graphics.setColor(1, 1, 1, alpha);
+        blend();
+        // renderFakeItem 写入比 GUI 更靠前的深度；而 setColor/flush 又会启用深度测试。
+        // 对照原 GuiArmorStation，遮罩、槽底和边框都在关闭深度测试后按绘制顺序覆盖图标。
+        com.mojang.blaze3d.systems.RenderSystem.disableDepthTest();
+    }
+    static final class PreviewPlayer extends net.minecraft.client.player.RemotePlayer {
         PreviewPlayer(net.minecraft.client.multiplayer.ClientLevel level, net.minecraft.client.player.AbstractClientPlayer source) {
             super(level, source.getGameProfile());
             getEntityData().set(DATA_PLAYER_MODE_CUSTOMISATION, source.getEntityData().get(DATA_PLAYER_MODE_CUSTOMISATION));

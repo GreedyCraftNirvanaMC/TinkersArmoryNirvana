@@ -34,6 +34,7 @@ final class ArmoryBookDocument {
     final Map<String, Integer> locations = new LinkedHashMap<>();
     final ArmoryBookContents book;
     private final Font font;
+    private final ArmoryMaterialItems materialItems = new ArmoryMaterialItems();
     private List<Element> elements;
 
     ArmoryBookDocument(Font font, ArmoryBookContents book) {
@@ -68,7 +69,7 @@ final class ArmoryBookDocument {
             int columns = (WIDTH - 30) / size;
             for (int i = 0; i < count; i++) {
                 var page = section.pages().get(start + i); var material = TinkerMaterials.getMaterial(page.definition());
-                var icon = material.getRepresentativeItem(); if (icon.isEmpty()) { icon = armor("helmet", material.identifier); }
+                var icon = materialItems.representative(material);
                 elements.add(new Tile(15 + i % columns * size, 20 + i / columns * size, size, scale, page.title(), page.id(), icon));
             }
             add(section.id() + ".overview" + start / 49, elements, elements);
@@ -109,7 +110,8 @@ final class ArmoryBookDocument {
         if (flavour != null) { text(List.of(Component.literal("\"" + flavour + "\"").withStyle(ChatFormatting.ITALIC)), x + width, y, width - 16, 60); }
         int edge = rightSide ? WIDTH - 18 : 0; y = 10;
         List<Icon> display = new ArrayList<>();
-        if (!material.getRepresentativeItem().isEmpty()) { display.add(new Icon(edge, y, List.of(material.getRepresentativeItem()), 1, null)); }
+        var representative = materialItems.representative(material);
+        if (!representative.isEmpty()) { display.add(new Icon(edge, y, List.of(representative), 1, null)); }
         if (material.isCraftable()) { display.add(new Icon(edge, y, List.of(new ItemStack(com.gctn.tconstruct.tables.WorkshopModule.BLOCKS.get(com.gctn.tconstruct.tables.WorkshopModule.Kind.PART_BUILDER).get())), 1, book.label("material.craft_partbuilder"))); }
         if (material.isCastable()) { display.add(new Icon(edge, y, List.of(new ItemStack(com.gctn.tconstruct.smeltery.SmelteryModule.BASIN.get())), 1, Component.literal(book.label("material.craft_casting").getString().replace("%s", material.getDisplayName().getString())))); }
         for (String type : ArmoryStationLayout.ARMOR) { display.add(new Icon(edge, y, List.of(armor(type, material.identifier)), 1, null)); }

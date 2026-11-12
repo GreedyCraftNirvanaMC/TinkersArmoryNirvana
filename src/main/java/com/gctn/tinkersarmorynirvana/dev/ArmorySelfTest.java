@@ -56,6 +56,22 @@ public final class ArmorySelfTest {
             check(server.getRecipeManager().byKey(net.minecraft.resources.ResourceLocation.parse("example:armory/amethyst_guard")).isPresent(), "KubeJS recipe events install a native armor modifier recipe");
         }
         check(ArmoryRegistry.materials().size() >= 30, "All thirty original armor materials are registered");
+        var materialItems = new ArmoryMaterialItems();
+        check(materialItems.representative(com.gctn.tconstruct.library.TinkerMaterials.wood).is(Items.OAK_PLANKS), "Book wood icon resolves the native plank ingredient instead of armor");
+        check(materialItems.representative(com.gctn.tconstruct.library.TinkerMaterials.flint).is(Items.FLINT), "Book flint icon resolves the material ingredient");
+        check(materialItems.representative(com.gctn.tconstruct.library.TinkerMaterials.iron).is(Items.IRON_INGOT), "Book iron icon prefers ingots over nuggets and storage blocks");
+        check(materialItems.representative(com.gctn.tconstruct.library.TinkerMaterials.cobalt).is(com.gctn.tconstruct.smeltery.SmelteryModule.item("cobalt_ingot")), "Book cobalt icon resolves the dependency's registered ingot");
+        var missingRepresentatives = ArmoryRegistry.materials().keySet().stream().map(com.gctn.tconstruct.library.TinkerMaterials::getMaterial)
+                .filter(material -> !material.isHidden() && materialItems.representative(material).isEmpty()).map(material -> material.identifier).toList();
+        check(missingRepresentatives.isEmpty(), "Every visible armor material has a representative ingredient in the current pack: " + missingRepresentatives);
+        var displayMaterial = new com.gctn.tconstruct.library.materials.Material("conarm:display_check").setRepresentativeItem(() -> new ItemStack(Items.DIAMOND, 8));
+        var displayItem = materialItems.representative(displayMaterial);
+        check(displayItem.is(Items.DIAMOND) && displayItem.getCount() == 1, "Explicit addon representatives override ingredient selection and normalize count");
+        displayItem.grow(4);
+        check(materialItems.representative(displayMaterial).getCount() == 1, "Representative icon callers cannot mutate shared material stacks");
+        if (Boolean.getBoolean("conarm.kubejsFixture")) {
+            check(materialItems.representative(com.gctn.tconstruct.library.TinkerMaterials.getMaterial("example:amethyst")).is(Items.AMETHYST_SHARD), "Book material icons include ingredients registered by actual KubeJS startup scripts");
+        }
         for (String material : ArmoryRegistry.materials().keySet()) {
             for (String type : ArmoryContent.ARMORS.keySet()) {
                 ItemStack armor = armor(type, material);

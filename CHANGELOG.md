@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.21.1-1.0.3
+
+- Prevent the inherited screen background pass from blurring the already-rendered Armory book and leave the world background clear, matching the original book.
+- Restore the original wood-station parent geometry and side textures. Inherit native block-item display transforms for both tables so GUI, first/third-person and dropped-item views use block scales and rotations.
+- Draw the enlarged assembly emblem behind the original 0.82 cover and 0.28/0.58 slot backgrounds with the original depth-test ordering, preserving visible slot borders and outlines.
+- Suppress nameplates and below-name scoreboard text only for the station's preview player.
+- Use the same live material-input selection as TinkersNirvana's guide for material index icons and detail sidebars: explicit representative first, then ingots, then unit-value ingredients. Remove the armor-helmet fallback and retain addon/KubeJS representatives.
+- Build, resource audit and dedicated-server checks passed: 339 without KubeJS and 354 with the example scripts, including representative items from real KubeJS material inputs.
+- Keep the required TinkersNirvana version at 1.21.1-1.0.2; no dependency source or binary change is needed for these fixes. Client visual acceptance remains manual.
+
 ## 1.21.1-1.0.2
 
 - Port the original station/forge layout: five armor/repair tabs, radial or selected-part input positions, outlined empty slots, player preview, wood/metal frames and two scrolling information panels.

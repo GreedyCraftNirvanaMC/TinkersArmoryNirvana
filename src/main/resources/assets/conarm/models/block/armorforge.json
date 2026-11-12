@@ -390,5 +390,6 @@
         }
       }
     }
-  ]
+  ],
+  "parent": "minecraft:block/block"
 }

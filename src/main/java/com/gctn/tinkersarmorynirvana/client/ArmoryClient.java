@@ -24,6 +24,10 @@ public final class ArmoryClient {
         event.register(ArmoryContent.STATION_MENU.get(), ArmoryScreen::new); event.register(ArmoryContent.ACCESSORY_MENU.get(), AccessoryScreen::new);
     }
     @SubscribeEvent public static void keys(RegisterKeyMappingsEvent event) { event.register(HELMET); event.register(CHEST); event.register(LEGS); }
+    @SubscribeEvent public static void previewName(RenderNameTagEvent event) {
+        // 预览复用玩家皮肤，但它不是世界中的玩家；禁止名字与计分板文字进入预览视口。
+        if (event.getEntity() instanceof ArmoryScreen.PreviewPlayer) { event.setCanRender(net.neoforged.neoforge.common.util.TriState.FALSE); }
+    }
     @SubscribeEvent public static void setup(net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) {
         event.enqueueWork(() -> ArmoryContent.PARTS.values().forEach(item -> net.minecraft.client.renderer.item.ItemProperties.register(item.get(), ArmoryContent.id("material_style"),
                 (stack, level, entity, seed) -> switch (ArmorPartItem.material(stack)) { case "paper" -> 1; case "cactus" -> 2; default -> 0; })));
