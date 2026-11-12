@@ -125,13 +125,13 @@ public final class ArmoryBookScreen extends Screen {
             hits.add(new Hit(x + icon.x(), y + icon.y(), 16 * icon.scale(), 16 * icon.scale(), icon.tooltip(), icon.tooltip() == null ? stack : ItemStack.EMPTY, null, false));
         } else if (element instanceof Section section) {
             int tx = x + section.x(), ty = y + section.y(); boolean hover = mouseX >= tx && mouseX < tx + 42 && mouseY >= ty && mouseY < ty + 42;
-            if (hover) { graphics.fill(tx + 5, ty + 5, tx + 37, ty + 37, 0x77ee541c); }
-            // 物品各渲染层处理全局 alpha 的方式不同，不能用旧版的半透明色值控制目录图标。
-            // 图标和文字始终完全不透明；悬停只改变背景、文字颜色和字重。
+            if (hover) { graphics.fill(tx + 5, ty + 3, tx + 37, ty + 35, 0x77ee541c); }
+            // 对照 TinkersNirvana 的 BookScreen.section / BookContents.paper：图标不淡化，
+            // 文字使用 uniform 字体和原悬停色值，不添加 bold 样式。
             graphics.setColor(1, 1, 1, 1); item(graphics, section.icon(), tx + 5, ty + 5, 2); graphics.setColor(1, 1, 1, 1);
-            var label = section.label().copy().withStyle(style -> style.withBold(hover));
-            graphics.drawString(font, label, tx + 21 - font.width(label) / 2, ty + 38, hover ? 0xff000000 : 0xff7f7f7f, false);
-            hits.add(new Hit(tx, ty, 42, 42, section.label(), ItemStack.EMPTY, section.target(), false));
+            var label = section.label().copy().withStyle(style -> style.withFont(ResourceLocation.withDefaultNamespace("uniform")));
+            graphics.drawString(font, label, tx + 21 - font.width(label) / 2, ty + 38, hover ? 0xff000000 : 0x7f000000, false);
+            hits.add(new Hit(tx, ty, 42, 46, section.label(), ItemStack.EMPTY, section.target(), false));
         } else if (element instanceof Tile tile) {
             int tx = x + tile.x(), ty = y + tile.y();
             item(graphics, tile.icon(), tx + (tile.size() - 16 * tile.scale()) / 2, ty + (tile.size() - 16 * tile.scale()) / 2, tile.scale());

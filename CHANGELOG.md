@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.21.1-1.0.8
+
+- Follow the supplied TinkersNirvana `BookScreen.section` and `BookContents.paper` hover implementation: use the `minecraft:uniform` font without added bold, retain its idle/hover text colors, highlight bounds and clickable caption extent, and keep icons opaque.
+
 ## 1.21.1-1.0.7
 
 - Match the chapter-label hover reference: gray regular text when idle, black bold text when hovered, with full icon/text opacity in both states. Center labels using the styled text width and keep the stored label unchanged.

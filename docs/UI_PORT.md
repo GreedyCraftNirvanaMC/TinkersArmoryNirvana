@@ -17,6 +17,8 @@ This port follows the supplied 1.12.2 sources and their resource layouts. Client
 
 Paths in the modern column are below `src/main/java/com/gctn/tinkersarmorynirvana/`. Original Armory classes are under `c4.conarm`, TinkersAntique classes under `slimeknights.tconstruct`, and Mantle classes under `slimeknights.mantle` in the supplied projects.
 
+Chapter hover presentation follows the supplied modern TinkersNirvana `BookScreen.section` and `BookContents.paper`: `minecraft:uniform` text without explicit bold, source idle/hover text colors and highlight/caption bounds. Item icons stay opaque.
+
 ## API adaptations
 
 - Minecraft 1.21.1 slot coordinates are immutable. The menu replaces slot view objects with the same underlying container/index when selection changes; it does not move or duplicate their stacks. The client and server use the same layout constants.
