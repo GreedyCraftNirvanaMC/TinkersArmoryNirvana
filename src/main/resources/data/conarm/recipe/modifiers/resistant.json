@@ -1,0 +1,13 @@
+{
+  "type": "conarm:armor_modifier",
+  "modifier": "conarm:resistant",
+  "points": 1,
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "conarm:resist_mat"
+      },
+      "count": 1
+    }
+  ]
+}

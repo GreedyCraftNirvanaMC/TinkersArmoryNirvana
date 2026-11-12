@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " t ",
+    "glg",
+    " t "
+  ],
+  "key": {
+    "l": {
+      "item": "conarm:travel_goggles_base"
+    },
+    "t": {
+      "item": "minecraft:ghast_tear"
+    },
+    "g": {
+      "tag": "c:dusts/glowstone"
+    }
+  },
+  "result": {
+    "id": "conarm:travel_soul",
+    "count": 1
+  }
+}

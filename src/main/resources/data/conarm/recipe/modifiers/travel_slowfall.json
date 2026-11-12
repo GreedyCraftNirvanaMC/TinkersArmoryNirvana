@@ -1,0 +1,13 @@
+{
+  "type": "conarm:armor_modifier",
+  "modifier": "conarm:travel_slowfall",
+  "points": 1,
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "conarm:travel_slowfall"
+      },
+      "count": 1
+    }
+  ]
+}

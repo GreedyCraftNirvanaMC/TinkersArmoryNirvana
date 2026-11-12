@@ -1,0 +1,13 @@
+{
+  "type": "conarm:armor_modifier",
+  "modifier": "conarm:emerald",
+  "points": 1,
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "minecraft:emerald"
+      },
+      "count": 1
+    }
+  ]
+}

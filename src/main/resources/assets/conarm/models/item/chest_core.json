@@ -1,0 +1,20 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "conarm:items/parts/chest_core"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "conarm:material_style": 1
+      },
+      "model": "conarm:item/chest_core_paper"
+    },
+    {
+      "predicate": {
+        "conarm:material_style": 2
+      },
+      "model": "conarm:item/chest_core_cactus"
+    }
+  ]
+}

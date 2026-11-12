@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "obo",
+    "bkb",
+    "obo"
+  ],
+  "key": {
+    "o": {
+      "item": "minecraft:obsidian"
+    },
+    "b": {
+      "item": "minecraft:blaze_powder"
+    },
+    "k": {
+      "tag": "conarm:casts"
+    }
+  },
+  "result": {
+    "id": "conarm:resist_mat_fire",
+    "count": 1
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "lal",
+    "lwl",
+    "lwl"
+  ],
+  "key": {
+    "l": {
+      "tag": "c:leathers"
+    },
+    "w": {
+      "tag": "minecraft:wool"
+    },
+    "a": {
+      "tag": "c:ingots/aluminum"
+    }
+  },
+  "result": {
+    "id": "conarm:travel_cloak",
+    "count": 1
+  }
+}

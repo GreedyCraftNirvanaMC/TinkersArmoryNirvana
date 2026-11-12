@@ -1,0 +1,13 @@
+{
+  "type": "conarm:armor_modifier",
+  "modifier": "conarm:concealed",
+  "points": 1,
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "conarm:invisible_ink"
+      },
+      "count": 1
+    }
+  ]
+}

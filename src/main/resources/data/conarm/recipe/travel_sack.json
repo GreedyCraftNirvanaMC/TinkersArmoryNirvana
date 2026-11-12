@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "lll",
+    "aca",
+    "lll"
+  ],
+  "key": {
+    "l": {
+      "tag": "c:leathers"
+    },
+    "a": {
+      "tag": "c:ingots/aluminum"
+    },
+    "c": {
+      "tag": "c:chests/wooden"
+    }
+  },
+  "result": {
+    "id": "conarm:travel_sack",
+    "count": 1
+  }
+}

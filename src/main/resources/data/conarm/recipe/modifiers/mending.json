@@ -1,0 +1,13 @@
+{
+  "type": "conarm:armor_modifier",
+  "modifier": "conarm:mending",
+  "points": 1,
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "tconstruct:mending_moss"
+      },
+      "count": 1
+    }
+  ]
+}

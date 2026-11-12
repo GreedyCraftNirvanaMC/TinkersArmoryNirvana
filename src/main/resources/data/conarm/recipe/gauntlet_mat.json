@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  i",
+    "ili",
+    " ii"
+  ],
+  "key": {
+    "i": {
+      "tag": "c:ingots/iron"
+    },
+    "l": {
+      "tag": "c:leathers"
+    }
+  },
+  "result": {
+    "id": "conarm:gauntlet_mat",
+    "count": 1
+  }
+}

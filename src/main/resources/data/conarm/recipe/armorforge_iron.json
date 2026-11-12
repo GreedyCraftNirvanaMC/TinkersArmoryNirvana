@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BBB",
+    "MTM",
+    "M M"
+  ],
+  "key": {
+    "B": {
+      "item": "tconstruct:seared_bricks"
+    },
+    "M": {
+      "tag": "c:storage_blocks/iron"
+    },
+    "T": {
+      "item": "conarm:armorstation"
+    }
+  },
+  "result": {
+    "id": "conarm:armorforge"
+  }
+}

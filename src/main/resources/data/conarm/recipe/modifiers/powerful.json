@@ -1,0 +1,13 @@
+{
+  "type": "conarm:armor_modifier",
+  "modifier": "conarm:powerful",
+  "points": 1,
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "conarm:gauntlet_mat_attack"
+      },
+      "count": 1
+    }
+  ]
+}

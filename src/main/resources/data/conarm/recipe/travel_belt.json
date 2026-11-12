@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "clc"
+  ],
+  "key": {
+    "l": {
+      "item": "conarm:travel_belt_base"
+    },
+    "c": {
+      "tag": "c:chests/wooden"
+    }
+  },
+  "result": {
+    "id": "conarm:travel_belt",
+    "count": 1
+  }
+}

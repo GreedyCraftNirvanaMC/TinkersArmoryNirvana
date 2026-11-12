@@ -1,0 +1,13 @@
+{
+  "type": "conarm:armor_modifier",
+  "modifier": "conarm:travel_sack",
+  "points": 1,
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "conarm:travel_sack"
+      },
+      "count": 1
+    }
+  ]
+}

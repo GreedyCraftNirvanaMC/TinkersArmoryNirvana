@@ -1,0 +1,13 @@
+{
+  "type": "conarm:armor_modifier",
+  "modifier": "conarm:projectile_resistant",
+  "points": 1,
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "conarm:resist_mat_proj"
+      },
+      "count": 1
+    }
+  ]
+}

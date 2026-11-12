@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "rer",
+    "ege",
+    "rer"
+  ],
+  "key": {
+    "r": {
+      "item": "minecraft:lapis_block"
+    },
+    "e": {
+      "item": "minecraft:ender_eye"
+    },
+    "g": {
+      "item": "conarm:gauntlet_mat"
+    }
+  },
+  "result": {
+    "id": "conarm:gauntlet_mat_reach",
+    "count": 1
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "l l",
+    "glg",
+    "b b"
+  ],
+  "key": {
+    "l": {
+      "tag": "c:leathers"
+    },
+    "g": {
+      "tag": "c:glass_blocks"
+    },
+    "b": {
+      "tag": "c:ingots/alubrass"
+    }
+  },
+  "result": {
+    "id": "conarm:travel_goggles_base",
+    "count": 1
+  }
+}

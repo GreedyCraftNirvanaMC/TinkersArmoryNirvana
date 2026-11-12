@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "conarm:items/boots/core",
+    "layer1": "conarm:items/boots/plate",
+    "layer2": "conarm:items/boots/trim"
+  }
+}

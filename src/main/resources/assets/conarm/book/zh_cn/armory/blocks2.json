@@ -1,0 +1,12 @@
+{
+  "image": {
+    "file": "conarm:textures/gui/book/armorgui.png",
+    "width": 154,
+    "height": 70
+  },
+  "text": [
+    {
+      "text": "无论是盔甲组装台还是锻甲砧它们都具有内置预览功能，以便使玩家能更加清晰查看盔甲穿戴在身上的样子。"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "type": "conarm:armor_modifier",
+  "modifier": "conarm:extramodifier",
+  "points": 1,
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "minecraft:dragon_head"
+      },
+      "count": 1
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "conarm:items/parts/helmet_core"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "conarm:material_style": 1
+      },
+      "model": "conarm:item/helmet_core_paper"
+    },
+    {
+      "predicate": {
+        "conarm:material_style": 2
+      },
+      "model": "conarm:item/helmet_core_cactus"
+    }
+  ]
+}

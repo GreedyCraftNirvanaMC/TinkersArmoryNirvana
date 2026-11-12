@@ -1,0 +1,13 @@
+{
+  "type": "conarm:armor_modifier",
+  "modifier": "conarm:telekinetic",
+  "points": 1,
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "conarm:gauntlet_mat_reach"
+      },
+      "count": 1
+    }
+  ]
+}

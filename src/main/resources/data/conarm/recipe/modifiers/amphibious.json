@@ -1,0 +1,19 @@
+{
+  "type": "conarm:armor_modifier",
+  "modifier": "conarm:amphibious",
+  "points": 1,
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "minecraft:glass"
+      },
+      "count": 2
+    },
+    {
+      "ingredient": {
+        "item": "minecraft:prismarine_crystals"
+      },
+      "count": 1
+    }
+  ]
+}

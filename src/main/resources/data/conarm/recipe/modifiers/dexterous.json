@@ -1,0 +1,13 @@
+{
+  "type": "conarm:armor_modifier",
+  "modifier": "conarm:dexterous",
+  "points": 1,
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "conarm:gauntlet_mat_speed"
+      },
+      "count": 1
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:glass_bottle"
+    },
+    {
+      "item": "minecraft:lapis_lazuli"
+    },
+    {
+      "tag": "c:glass_blocks"
+    },
+    {
+      "tag": "c:ender_pearls"
+    }
+  ],
+  "result": {
+    "id": "conarm:invisible_ink",
+    "count": 1
+  }
+}

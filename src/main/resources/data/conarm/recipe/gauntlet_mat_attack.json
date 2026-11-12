@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "rrr",
+    "rgr",
+    "rrr"
+  ],
+  "key": {
+    "r": {
+      "item": "minecraft:quartz_block"
+    },
+    "g": {
+      "item": "conarm:gauntlet_mat"
+    }
+  },
+  "result": {
+    "id": "conarm:gauntlet_mat_attack",
+    "count": 1
+  }
+}

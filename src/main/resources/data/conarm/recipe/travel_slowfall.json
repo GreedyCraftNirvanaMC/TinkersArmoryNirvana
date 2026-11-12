@@ -1,0 +1,40 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "fsf",
+    "fcf",
+    "fef"
+  ],
+  "key": {
+    "s": [
+      {
+        "item": "tconstruct:slime_congealed_green"
+      },
+      {
+        "item": "tconstruct:slime_congealed_blue"
+      },
+      {
+        "item": "tconstruct:slime_congealed_purple"
+      },
+      {
+        "item": "tconstruct:slime_congealed_magma"
+      },
+      {
+        "item": "tconstruct:slime_congealed_blood"
+      }
+    ],
+    "f": {
+      "tag": "c:feathers"
+    },
+    "c": {
+      "item": "conarm:travel_cloak"
+    },
+    "e": {
+      "item": "minecraft:ender_pearl"
+    }
+  },
+  "result": {
+    "id": "conarm:travel_slowfall",
+    "count": 1
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "conarm:armor_modifier",
+  "modifier": "conarm:creative",
+  "points": 1,
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "tconstruct:creative_modifier"
+      },
+      "count": 1
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "type": "conarm:armor_modifier",
+  "modifier": "conarm:parasitic",
+  "points": 1,
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "tconstruct:necrotic_bone"
+      },
+      "count": 1
+    }
+  ]
+}

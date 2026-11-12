@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "lll",
+    "bab",
+    "lll"
+  ],
+  "key": {
+    "l": {
+      "tag": "c:leathers"
+    },
+    "b": {
+      "tag": "c:ingots/alubrass"
+    },
+    "a": {
+      "tag": "c:ingots/aluminum"
+    }
+  },
+  "result": {
+    "id": "conarm:travel_belt_base",
+    "count": 1
+  }
+}

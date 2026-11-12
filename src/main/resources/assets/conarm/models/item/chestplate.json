@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "conarm:items/chestplate/core",
+    "layer1": "conarm:items/chestplate/plate",
+    "layer2": "conarm:items/chestplate/trim"
+  }
+}

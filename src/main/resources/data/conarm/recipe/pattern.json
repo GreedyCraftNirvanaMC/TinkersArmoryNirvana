@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "tconstruct:pattern"
+    }
+  ],
+  "result": {
+    "id": "conarm:pattern"
+  }
+}

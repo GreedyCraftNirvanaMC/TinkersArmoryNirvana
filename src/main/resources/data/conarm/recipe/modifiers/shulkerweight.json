@@ -1,0 +1,13 @@
+{
+  "type": "conarm:armor_modifier",
+  "modifier": "conarm:shulkerweight",
+  "points": 1,
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "minecraft:popped_chorus_fruit"
+      },
+      "count": 1
+    }
+  ]
+}

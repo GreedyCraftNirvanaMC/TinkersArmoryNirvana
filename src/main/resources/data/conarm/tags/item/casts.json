@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "values": [
+    "conarm:cast_helmet_core",
+    "conarm:cast_chest_core",
+    "conarm:cast_leggings_core",
+    "conarm:cast_boots_core",
+    "conarm:cast_armor_plate",
+    "conarm:cast_armor_trim",
+    "conarm:cast_polishing_kit",
+    "tconstruct:cast_blank",
+    "tconstruct:cast_ingot",
+    "tconstruct:cast_nugget",
+    "tconstruct:cast_gem"
+  ]
+}

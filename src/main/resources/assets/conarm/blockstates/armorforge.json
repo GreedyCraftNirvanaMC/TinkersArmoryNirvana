@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "conarm:block/armorforge",
+      "y": 0
+    },
+    "facing=east": {
+      "model": "conarm:block/armorforge",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "conarm:block/armorforge",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "conarm:block/armorforge",
+      "y": 270
+    }
+  }
+}

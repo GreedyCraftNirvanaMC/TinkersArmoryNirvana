@@ -1,0 +1,13 @@
+{
+  "type": "conarm:armor_modifier",
+  "modifier": "conarm:reinforced",
+  "points": 1,
+  "ingredients": [
+    {
+      "ingredient": {
+        "item": "tconstruct:reinforcement"
+      },
+      "count": 1
+    }
+  ]
+}

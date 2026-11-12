@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "type": "neoforge:components",
+      "items": "minecraft:potion",
+      "components": {
+        "minecraft:potion_contents": {
+          "potion": "minecraft:night_vision"
+        }
+      },
+      "strict": false
+    },
+    {
+      "item": "minecraft:golden_carrot"
+    },
+    {
+      "item": "minecraft:flint_and_steel"
+    },
+    {
+      "item": "conarm:travel_goggles_base"
+    }
+  ],
+  "result": {
+    "id": "conarm:travel_night"
+  }
+}

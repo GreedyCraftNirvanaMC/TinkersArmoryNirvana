@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "conarm:items/helmet/core",
+    "layer1": "conarm:items/helmet/plate",
+    "layer2": "conarm:items/helmet/trim"
+  }
+}
