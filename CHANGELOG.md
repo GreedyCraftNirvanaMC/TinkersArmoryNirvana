@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.21.1-1.0.5
+
+- Render all five book chapter icons at full opacity, matching the dependency's guide. Remove the legacy idle alpha tint that faded some item render layers while leaving others opaque; retain hover backgrounds and label colors.
+- Compilation and resource audit passed. Client appearance remains pending manual acceptance; common gameplay code is unchanged from 1.0.4.
+
 ## 1.21.1-1.0.4
 
 - Remove the built-in armor-leveling implementation, all `[leveling]` configuration, automatic damage XP, level rewards, level messages/sounds and level tooltips. Restore three base modifier slots before traits/modifiers and addon contributions.

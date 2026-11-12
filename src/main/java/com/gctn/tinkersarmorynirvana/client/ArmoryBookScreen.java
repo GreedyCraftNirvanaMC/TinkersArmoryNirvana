@@ -126,7 +126,9 @@ public final class ArmoryBookScreen extends Screen {
         } else if (element instanceof Section section) {
             int tx = x + section.x(), ty = y + section.y(); boolean hover = mouseX >= tx && mouseX < tx + 42 && mouseY >= ty && mouseY < ty + 42;
             if (hover) { graphics.fill(tx + 5, ty + 5, tx + 37, ty + 37, 0x77ee541c); }
-            graphics.setColor(1, 1, 1, hover ? 1 : .5F); item(graphics, section.icon(), tx + 5, ty + 5, 2); graphics.setColor(1, 1, 1, 1);
+            // 物品各渲染层处理全局 alpha 的方式不同，不能用旧版的半透明色值控制目录图标。
+            // 和依赖宝典保持一致：图标始终不透明，悬停反馈由背景和文字颜色提供。
+            graphics.setColor(1, 1, 1, 1); item(graphics, section.icon(), tx + 5, ty + 5, 2); graphics.setColor(1, 1, 1, 1);
             graphics.drawString(font, section.label(), tx + 21 - font.width(section.label()) / 2, ty + 38, hover ? 0xff000000 : 0x7f000000, false);
             hits.add(new Hit(tx, ty, 42, 42, section.label(), ItemStack.EMPTY, section.target(), false));
         } else if (element instanceof Tile tile) {
