@@ -1,5 +1,7 @@
 # TinkersArmoryNirvana
 
+<img src="src/main/resources/tinkersarmorynirvana-logo.png" alt="TinkersArmoryNirvana" width="192">
+
 An LGPL-3.0-or-later port of **AntiqueArmory / Construct's Armory** for **Minecraft 1.21.1**, **NeoForge 21.1.265+** and **TinkersNirvana 1.21.1-1.0.2+**. The mod ID and content namespace are `conarm`.
 
 [简体中文](README.zh-CN.md) · [Developer API](docs/en/API.md) · [Addon state and slots](docs/en/EXTENSIONS.md) · [KubeJS](docs/en/KUBEJS.md) · [Configuration](docs/en/CONFIGURATION.md) · [Material table](docs/MATERIALS.md) · [Verification](docs/VERIFICATION.md) · [License and credits](NOTICE.md)

@@ -6,6 +6,7 @@ issueTrackerURL="https://github.com/GreedyCraftNirvanaMC/TinkersArmoryNirvana/is
 modId="${mod_id}"
 version="${mod_version}"
 displayName="${mod_name}"
+logoFile="tinkersarmorynirvana-logo.png"
 authors="C4, AntiqueArmory contributors, GreedyCraftNirvanaMC"
 description="Construct's Armory / AntiqueArmory port for TinkersNirvana on Minecraft 1.21.1."
 [[dependencies.${mod_id}]]

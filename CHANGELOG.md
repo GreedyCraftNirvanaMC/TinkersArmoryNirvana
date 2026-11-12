@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.21.1-1.0.10
+
+- Add an original transparent pixel-art armor emblem and use it in NeoForge mod metadata and both README files. Gameplay is unchanged.
+
 ## 1.21.1-1.0.9
 
 - Color material-trait names and descriptions using their actual source material in armor/part tooltips, Alt descriptions and workstation trait panels, replacing fixed cyan/purple colors.

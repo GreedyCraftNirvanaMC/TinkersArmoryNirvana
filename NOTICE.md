@@ -14,3 +14,5 @@ TinkersArmoryNirvana is a source port of **AntiqueArmory / Construct's Armory** 
 `LICENSE` preserves the original license grant. Complete LGPLv3 and GPLv3 texts are provided in `licenses/`. Modified source is distributed in this repository and in the generated sources JAR. Retain these notices when redistributing or adapting this port and follow the LGPL's source and relinking requirements.
 
 The separately supplied Minecraft-Mod-Language-Modpack uses CC BY-NC-SA 4.0. Its files are **not copied into this distribution**. The included legacy translations come from AntiqueArmory itself; new interface and documentation text is part of this port.
+
+The project logo `tinkersarmorynirvana-logo.png` is an original AI-generated emblem for this port, distributed under LGPL-3.0-or-later. Its prompt and provenance are recorded in `docs/LOGO.md`; it is not an upstream mod logo.

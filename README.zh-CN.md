@@ -1,5 +1,7 @@
 # 匠魂护甲：涅槃
 
+<img src="src/main/resources/tinkersarmorynirvana-logo.png" alt="TinkersArmoryNirvana" width="192">
+
 将 **AntiqueArmory / Construct's Armory** 移植至 **Minecraft 1.21.1 + NeoForge 21.1.265+**，依赖 **TinkersNirvana 1.21.1-1.0.2+**。沿用 `conarm` 模组 ID 与内容命名空间，采用 **LGPL-3.0-or-later**。
 
 [English](README.md) · [附属开发文档](docs/zh-CN/API.md) · [附属数据与强化槽](docs/zh-CN/EXTENSIONS.md) · [KubeJS 魔改文档](docs/zh-CN/KUBEJS.md) · [配置说明](docs/zh-CN/CONFIGURATION.md) · [材料表](docs/MATERIALS.md) · [验证与手动验收](docs/VERIFICATION.md) · [许可与署名](NOTICE.md)
