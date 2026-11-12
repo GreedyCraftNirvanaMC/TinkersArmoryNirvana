@@ -179,7 +179,7 @@ def generate_languages(source):
     modifiers.update(["resistant", "fire_resistant", "blast_resistant", "projectile_resistant"])
     for path in (source / "lang").glob("*.lang"):
         data = language(path)
-        result = dict(data)
+        result = {key: value for key, value in data.items() if not key.startswith(("conarm.general.leveling.", "tooltip.level", "tooltip.xp"))}
         for key, value in data.items():
             if key.startswith("item.conarm.") and key.endswith(".name"):
                 result[key[:-5]] = value
@@ -264,8 +264,6 @@ def extra_translations(chinese):
         "gui.conarm.accessories": ("Armory accessories", "护甲配件"),
         "key.conarm.accessories": ("Open armor accessories", "打开护甲配件控制"), "key.categories.conarm": ("Tinkers' Armory", "匠魂护甲"),
         "message.conarm.enabled": ("%s enabled", "%s已启用"), "message.conarm.disabled": ("%s disabled", "%s已关闭"),
-        "message.conarm.level_up": ("%s reached level %s!", "%s已升到%s级！"),
-        "tooltip.conarm.level": ("Level %s — XP %s / %s", "等级%s　经验%s / %s"),
         "book.conarm.cover.title": ("Armory\nAddendum", "盔甲锻造\n手册"),
         "book.conarm.cover.subtitle": ("C4 · Nirvana", "C4 · 涅槃"),
         "book.conarm.contents": ("Contents", "目录"),

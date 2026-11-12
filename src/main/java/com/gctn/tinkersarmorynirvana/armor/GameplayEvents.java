@@ -119,7 +119,6 @@ public final class GameplayEvents {
         try {
             for (var stack : armor(event.getEntity())) {
                 ArmorData.invoke(stack, event.getEntity(), "afterDamage", event.getSource(), event.getNewDamage(), null);
-                if (event.getEntity() instanceof Player player) { ArmorLeveling.damaged(stack, player, event.getOriginalDamage(), event.getSource()); }
             }
         }
         finally { SECONDARY_DAMAGE.remove(); }

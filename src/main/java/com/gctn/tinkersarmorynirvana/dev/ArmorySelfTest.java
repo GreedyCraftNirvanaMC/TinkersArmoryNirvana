@@ -153,15 +153,7 @@ public final class ArmorySelfTest {
         ArmorEffects.begin(); ArmorEffects.end(fake);
         check(fake.getEffect(net.minecraft.world.effect.MobEffects.NIGHT_VISION).getDuration() == 3600, "Accessory cleanup preserves an independent night-vision potion");
         fake.removeEffect(net.minecraft.world.effect.MobEffects.NIGHT_VISION);
-        boolean previousLeveling = ArmoryConfig.LEVELING.get();
-        try {
-            ArmoryConfig.LEVELING.set(true);
-            var progressing = armor("helmet", "iron");
-            ArmorLeveling.damaged(progressing, fake, 400, fake.damageSources().generic());
-            check(ArmorData.read(progressing).getInt("Experience") == 0 && ArmorData.read(progressing).getInt("Level") == 0, "Armor-bypassing damage does not grant armor experience");
-            ArmorLeveling.damaged(progressing, fake, 400, fake.damageSources().playerAttack(fake));
-            check(ArmorData.read(progressing).getInt("Level") == 1 && ArmorData.freeSlots(progressing) == 4, "Enabled native leveling awards a persisted level and modifier slot");
-        } finally { ArmoryConfig.LEVELING.set(previousLeveling); }
+        addonExtensions();
         fake.setItemSlot(EquipmentSlot.CHEST, chest);
         AccessoryMenu bag = new AccessoryMenu(3, fake.getInventory(), EquipmentSlot.CHEST, "travel_sack");
         bag.getSlot(0).set(new ItemStack(Items.DIAMOND, 12));
@@ -179,6 +171,74 @@ public final class ArmorySelfTest {
         menuTransaction(fake);
         originalMenuInteractions(fake);
         nativePartBuilder(fake);
+    }
+
+    private void addonExtensions() {
+        var armor = armor("helmet", "iron");
+        var legacy = ArmorData.read(armor); legacy.putInt("Level", 99); legacy.putInt("Experience", 5000);
+        armor.set(ArmoryContent.ARMOR_DATA.get(), net.minecraft.world.item.component.CustomData.of(legacy));
+        check(ArmorData.freeSlots(armor) == 3, "Old root-level progression fields do not grant slots");
+        ArmorData.rebuild(armor);
+        check(!ArmorData.read(armor).contains("Level") && !ArmorData.read(armor).contains("Experience"), "Rebuilding removes discarded builtin progression fields");
+        armor.set(DataComponents.CUSTOM_NAME, Component.literal("附属接口测试")); armor.setDamageValue(10);
+        var first = new CompoundTag(); first.putInt("Level", 2); first.putLong("Experience", 17);
+        ArmorExtensions.update(armor, "testaddon:progress", first, 2);
+        check(ArmorData.freeSlots(armor) == 5 && ArmorExtensions.read(armor, "testaddon:progress").getInt("Level") == 2,
+                "Addon data and passive slot contributions are saved together");
+        first.putInt("Level", 999);
+        check(ArmorExtensions.read(armor, "testaddon:progress").getInt("Level") == 2, "Addon state does not retain caller-owned NBT references");
+        var second = new CompoundTag(); second.putString("Owner", "other"); ArmorExtensions.update(armor, "otheraddon:reward", second, 1);
+        check(ArmorData.freeSlots(armor) == 6 && ArmorExtensions.totalModifierSlots(armor) == 3, "Independent addon slot contributions combine");
+        var edited = ArmorExtensions.read(armor, "testaddon:progress"); edited.putInt("Level", 3);
+        check(ArmorExtensions.read(armor, "testaddon:progress").getInt("Level") == 2, "Addon reads return independent state copies");
+        ArmorExtensions.write(armor, "testaddon:progress", edited);
+        check(ArmorExtensions.modifierSlots(armor, "testaddon:progress") == 2 && ArmorExtensions.read(armor, "otheraddon:reward").getString("Owner").equals("other"),
+                "Writing one owner's data preserves its slots and the other owner's state");
+        ArmorExtensions.setModifierSlots(armor, "testaddon:progress", 3);
+        check(ArmorData.freeSlots(armor) == 7 && ArmorExtensions.read(armor, "testaddon:progress").getInt("Level") == 3, "Updating a slot contribution preserves addon data without duplicate rewards");
+        check(armor.getHoverName().getString().equals("附属接口测试") && armor.getDamageValue() == 10, "Addon updates preserve custom names and damage");
+        var saved = ItemStack.parseOptional(server.registryAccess(), (CompoundTag) armor.save(server.registryAccess()));
+        check(ItemStack.isSameItemSameComponents(armor, saved), "Addon state and slots survive disk serialization");
+        var buffer = new RegistryFriendlyByteBuf(io.netty.buffer.Unpooled.buffer(), server.registryAccess());
+        try { ItemStack.STREAM_CODEC.encode(buffer, armor); check(ItemStack.isSameItemSameComponents(armor, ItemStack.STREAM_CODEC.decode(buffer)), "Addon state and slots survive network serialization"); }
+        finally { buffer.release(); }
+        var input = new SimpleContainer(6); input.setItem(0, armor); input.setItem(1, ArmoryContent.PARTS.get("armor_trim").get().create("cobalt"));
+        var replacement = plan(input);
+        check(replacement != null && ArmorExtensions.read(replacement.result(), "testaddon:progress").getInt("Level") == 3
+                && ArmorExtensions.modifierSlots(replacement.result(), "testaddon:progress") == 3, "Part replacement preserves addon state and contributions");
+        var before = armor.copy(); boolean rejected = false;
+        try { ArmorExtensions.setModifierSlots(armor, "testaddon:progress", -1); } catch (IllegalArgumentException expected) { rejected = true; }
+        check(rejected && ItemStack.isSameItemSameComponents(armor, before), "Negative addon slot updates are rejected without partial writes");
+        rejected = false;
+        try { ArmorExtensions.setModifierSlots(armor, "testaddon:progress", 8192); } catch (IllegalArgumentException expected) { rejected = true; }
+        check(rejected && ItemStack.isSameItemSameComponents(armor, before), "Combined native slot limits are validated before committing addon changes");
+        rejected = false;
+        try { ArmorExtensions.write(armor, "unnamespaced", first); } catch (IllegalArgumentException expected) { rejected = true; }
+        check(rejected && ItemStack.isSameItemSameComponents(armor, before), "Addon owners must use full namespaced identifiers");
+        rejected = false;
+        try { ArmorExtensions.update(new ItemStack(Items.DIAMOND), "testaddon:progress", first, 1); } catch (IllegalArgumentException expected) { rejected = true; }
+        check(rejected, "Addon extension updates reject non-armor stacks");
+        java.util.function.Consumer<ArmorStatsEvent> listener = event -> {
+            var snapshot = event.getArmor(); var state = ArmorExtensions.read(snapshot, "testaddon:stats");
+            event.getStats().defense += state.getFloat("Defense");
+            snapshot.set(DataComponents.CUSTOM_NAME, Component.literal("不应写回"));
+        };
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(ArmorStatsEvent.class, listener);
+        try {
+            var state = new CompoundTag(); state.putFloat("Defense", 2); ArmorExtensions.write(armor, "testaddon:stats", state);
+            check(ArmorData.displayStats(armor).defense == 17 && ArmorData.stats(armor).defense == 2.72F, "Global addon stat events run before native defense allocation");
+            check(armor.getHoverName().getString().equals("附属接口测试"), "Stat event snapshots cannot mutate the original armor");
+            before = armor.copy(); state.putFloat("Defense", Float.NaN); rejected = false;
+            try { ArmorExtensions.write(armor, "testaddon:stats", state); } catch (IllegalArgumentException expected) { rejected = true; }
+            check(rejected && ItemStack.isSameItemSameComponents(armor, before), "Invalid addon stat results reject data changes atomically");
+        } finally { net.neoforged.neoforge.common.NeoForge.EVENT_BUS.unregister(listener); }
+        ArmorData.rebuild(armor);
+        check(ArmorData.displayStats(armor).defense == 15, "Removing a global stat listener removes its calculated effect");
+        ArmorExtensions.remove(armor, "testaddon:progress");
+        check(ArmorExtensions.read(armor, "testaddon:progress").isEmpty() && ArmorData.freeSlots(armor) == 4
+                && ArmorExtensions.read(armor, "otheraddon:reward").getString("Owner").equals("other"), "Removing one extension leaves the other owner's state and contribution intact");
+        var modified = ArmoryWorkshop.applyModifier(armor, "diamond", 1); ArmorExtensions.remove(modified, "otheraddon:reward");
+        check(ArmorData.level(modified, "diamond") == 1 && ArmorData.freeSlots(modified) == 2, "Removing addon slots does not delete installed modifiers");
     }
 
     private void menuTransaction(net.minecraft.server.level.ServerPlayer player) {

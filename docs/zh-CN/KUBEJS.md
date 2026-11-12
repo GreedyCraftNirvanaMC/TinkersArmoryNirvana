@@ -207,3 +207,5 @@ ClientEvents.lang('zh_cn', event => {
 ## 排错
 
 查看本次启动的 `logs/kubejs/startup.log`、`logs/kubejs/server.log` 和 `logs/latest.log`。脚本语法无报错不代表注册回调已生效；应检查创造物品栏、宝典、新建护甲的实际数值及回调效果。调试接口时可运行 [服务端示例验证](../VERIFICATION.md)。配方 `/reload` 不会重新注册材料和回调。不要在不同客户端、服务端安装不同版本的启动定义。
+
+需要附属式运行数据和加槽奖励时，可用 `Java.loadClass('com.gctn.tinkersarmorynirvana.api.ArmorExtensions')` 调用扩展接口。写操作应在服务端、纯属性计算／预览回调之外执行，数据参数使用原生 `CompoundTag`；接口本身不实现经验和等级。详见[扩展指南](EXTENSIONS.md)。

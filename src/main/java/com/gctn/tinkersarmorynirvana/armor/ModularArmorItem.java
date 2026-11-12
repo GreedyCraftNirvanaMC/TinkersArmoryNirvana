@@ -61,10 +61,6 @@ public class ModularArmorItem extends ArmorItem {
         tooltip.add(Component.translatable("tooltip.conarm.durability", stack.getMaxDamage() - stack.getDamageValue(), stack.getMaxDamage()));
         tooltip.add(Component.translatable("tooltip.conarm.defense", stats.defense, stats.toughness));
         tooltip.add(Component.translatable("tooltip.conarm.modifiers", ArmorData.freeSlots(stack)));
-        if (com.gctn.tinkersarmorynirvana.ArmoryConfig.leveling()) {
-            var data = ArmorData.read(stack);
-            tooltip.add(Component.translatable("tooltip.conarm.level", data.getInt("Level"), data.getInt("Experience"), ArmorLeveling.required(data.getInt("Level"))));
-        }
         ArmorData.traits(stack).forEach((id, level) -> tooltip.add(Component.translatable("trait." + id.replace(':', '.') + ".name")
                 .append(level > 1 ? " " + level : "").withStyle(ChatFormatting.AQUA)));
         for (var modifier : ArmoryRegistry.modifiers().values()) {

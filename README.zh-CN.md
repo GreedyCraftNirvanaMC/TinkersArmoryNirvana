@@ -2,7 +2,7 @@
 
 将 **AntiqueArmory / Construct's Armory** 移植至 **Minecraft 1.21.1 + NeoForge 21.1.265+**，依赖 **TinkersNirvana 1.21.1-1.0.2+**。沿用 `conarm` 模组 ID 与内容命名空间，采用 **LGPL-3.0-or-later**。
 
-[English](README.md) · [附属开发文档](docs/zh-CN/API.md) · [KubeJS 魔改文档](docs/zh-CN/KUBEJS.md) · [配置说明](docs/zh-CN/CONFIGURATION.md) · [材料表](docs/MATERIALS.md) · [验证与手动验收](docs/VERIFICATION.md) · [许可与署名](NOTICE.md)
+[English](README.md) · [附属开发文档](docs/zh-CN/API.md) · [附属数据与强化槽](docs/zh-CN/EXTENSIONS.md) · [KubeJS 魔改文档](docs/zh-CN/KUBEJS.md) · [配置说明](docs/zh-CN/CONFIGURATION.md) · [材料表](docs/MATERIALS.md) · [验证与手动验收](docs/VERIFICATION.md) · [许可与署名](NOTICE.md)
 
 包含四件模块化护甲、七种材质部件、原版三十种护甲材料数值、护甲词条与强化、组装、修复、部件替换、抛光、浮雕、装甲装配台和锻造台、冶炼炉浇筑，以及旅行腰带、药水腰带、背包、护目镜和披风。护甲损坏后保留物品，可以修复。配件库存保存在所属护甲的数据组件中。穿戴模型、配件模型与贴图沿用原项目资源并适配新版渲染接口。
 
@@ -14,7 +14,7 @@
 
 KubeJS 可选，已针对 `2101.7.2-build.381` 验证。使用时还需安装 KubeJS 声明的依赖，并保持客户端与服务端的启动脚本一致。不装 KubeJS 也可以正常加载本模组。
 
-按照本次移植范围，JEI 暂缓：提供的 TinkersNirvana 尚无 JEI 集成实现。旧版 CraftTweaker／ContentTweaker 能力通过 Java API 和 KubeJS 接口承接。原先可选的 Tool Leveling 功能提供原生配置实现，默认关闭，不强制新增依赖。
+按照本次移植范围，JEI 暂缓：提供的 TinkersNirvana 尚无 JEI 集成实现。旧版 CraftTweaker／ContentTweaker 能力通过 Java API 和 KubeJS 接口承接。护甲升级由附属通过[扩展接口](docs/zh-CN/EXTENSIONS.md)实现；本体不提供经验获取、等级曲线、升级奖励或升级配置。
 
 ## 基本使用
 

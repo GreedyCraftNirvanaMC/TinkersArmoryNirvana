@@ -2,19 +2,19 @@
 
 The runtime targets Java 21, Minecraft 1.21.1 and NeoForge 21.1.265. The baseline dependency is the locally built `TinkersNirvana-1.21.1-1.0.2.jar`. Client visual/interaction acceptance is intentionally left to the user, as requested. A dedicated-server check does not establish how the real client looks, sounds or responds to input.
 
-## Recorded results — 1.21.1-1.0.3, 2026-11-12
+## Recorded results — 1.21.1-1.0.4, 2026-11-12
 
 | Check | Result |
 | --- | --- |
 | Gradle build, runtime and sources JARs | Passed |
-| Dedicated server without KubeJS | 339 assertions passed |
-| Dedicated server with KubeJS build.381 and the supplied example scripts | 354 assertions passed; startup/server scripts loaded without errors or warnings |
-| Static resource audit | 525 JSON files and 220 required English/Chinese translation keys checked; passed |
+| Dedicated server without KubeJS | 359 assertions passed |
+| Dedicated server with KubeJS build.381 and the supplied example scripts | 374 assertions passed; startup/server scripts loaded without errors or warnings |
+| Static resource audit | 525 JSON files and 218 required English/Chinese translation keys checked; passed |
 | Missing-atlas regression check | Removing the atlas declaration makes the audit fail on 211 affected model/texture references; restoring it passes |
 | Missing display-transform/texture-variable regressions | Removing the forge display parent or the inherited table leg-bottom binding is rejected by the audit |
 | Real-client rendering, screens, input and audio | Pending manual acceptance by the user |
 
-The 1.0.3 checks add material representative selection, visible-material coverage, explicit addon overrides, independent stacks and actual KubeJS ingredient selection. Workstation geometry/UVs were compared against the original source, accounting for the dependency's renamed `leg_bottom` texture variable. Render depth ordering and nameplate handling were checked against the exact local Minecraft/NeoForge 1.21.1 sources; they still need real-client acceptance.
+Checks cover material representative selection, visible-material coverage, explicit addon overrides, independent stacks and actual KubeJS ingredient selection. Addon API checks cover independent data/slot owners, disk/network round trips, part replacement, snapshot isolation, stat-event unregistration, atomic rejection of negative/excessive contributions and invalid stats, and removal of old root progression fields. Workstation geometry/UVs were compared against the original source, accounting for the dependency's renamed `leg_bottom` texture variable. Render depth ordering and nameplate handling were checked against the exact local Minecraft/NeoForge 1.21.1 sources; they still need real-client acceptance.
 
 Generated server reports are `build/reports/armory-selftest-without-kubejs.md` and `build/reports/armory-selftest-with-kubejs.md`. Reports and game logs are local build artifacts and are not committed. No Minecraft client was launched for these results.
 
@@ -52,7 +52,7 @@ Checks cover:
 - Repair and part replacement previews, unchanged inputs before commit, exact consumption, invalidated snapshots and rejection of unrelated inputs.
 - Reusable patterns, material costs, mixed-material assembly, native recipe loading and overlapping ingredient allocation.
 - Broken-item preservation, attribute removal/restoration and complete reinforcement.
-- Accessory effect cleanup without removing independent potion effects; optional leveling rewards and rejection of armor-bypassing damage.
+- Accessory effect cleanup without removing independent potion effects; addon-owned data and slot contributions without builtin leveling.
 - Immediate accessory storage persistence, recursive-storage rejection and access closure when armor is removed.
 - Actual native part-builder previews and commits for all seven armor parts: pure previews, exact costs and retained patterns; native pickaxe-head processing remains valid.
 - Original menu tab selection, radial and selected-part coordinates, filled inactive-slot recovery, station/forge permissions, rename-only plans and rejection of wrong core types.
@@ -78,7 +78,7 @@ Model textures must also be collected by the target atlas. Minecraft 1.21's defa
 
 ## 客户端手动验收
 
-客户端与服务端使用 **TinkersArmoryNirvana 1.21.1-1.0.3** 和 **TinkersNirvana 1.21.1-1.0.2**，移除旧护甲 JAR 后重新启动。本次没有更新依赖 JAR。不要把源码 JAR 放进 `mods`。
+客户端与服务端使用 **TinkersArmoryNirvana 1.21.1-1.0.4** 和 **TinkersNirvana 1.21.1-1.0.2**，移除旧护甲 JAR 后重新启动。本次没有更新依赖 JAR。不要把源码 JAR 放进 `mods`。
 
 1. 对照提供的原版截图检查手册：封面打开后左侧深色、右侧五个章节图标；材料页有侧边物品列、基底／护甲板两列、下方夹板与斜体风味文字。整本书和文字应保持清晰，目录图标应是木板、燧石、金属锭等材料代表物品，详情侧栏首个图标应与之对应；不应整页显示头盔。检查彩色数值、带下划线的词条与悬停提示。翻页、目录、返回和书本重开后的阅读位置应正常，GUI 缩放后各项仍在书页内。
 2. 创造栏、部件、护甲和工作台不应有紫黑贴图；日志不应再出现 `Missing textures in model conarm:`。在原生模具台选择七种护甲部件模具，检查两个工作台在创造栏、主／副手、第三人称与掉落状态下的旋转和大小，木台侧面及桌腿底部不应缺纹理。到原生部件加工台加工木部件。预览不扣料，取出才按成本扣料，模具保留。
@@ -89,3 +89,7 @@ Model textures must also be collected by the target atlas. Minecraft 1.21's defa
 7. 检查实际穿戴和配件模型、锯木／铁砧声音、夜视／缩放／灵魂视野、隐身／缓降开关。脱装、损坏和关闭功能后，只清理本模组自己的效果。测试弹跳、潜浮、高步、冰霜行者及多人同时操作同一工作台的表现。
 
 These are the remaining manual acceptance checks, not claims of automated client verification.
+
+## Addon API acceptance
+
+The core has no `[leveling]` config, automatic armor XP, level rewards, level sounds or level tooltip. Rebuilding an old item clears its root `Level`/`Experience` fields. Installed modifiers remain; extra slots come only from ordinary traits/modifiers, namespaced contributions or explicit stat handlers. To test an external progression addon later, verify its own damage eligibility, level rules, tooltip, login/save/load and removal behavior against [the extension contract](en/EXTENSIONS.md).

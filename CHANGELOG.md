@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.21.1-1.0.4
+
+- Remove the built-in armor-leveling implementation, all `[leveling]` configuration, automatic damage XP, level rewards, level messages/sounds and level tooltips. Restore three base modifier slots before traits/modifiers and addon contributions.
+- Discard the old root `Level` and `Experience` fields on armor writes/rebuilds, without migration or compensation. Namespaced addon data remains independent.
+- Add `ArmorExtensions` for namespaced state and absolute extra-slot contributions, with atomic validation, immediate rebuilding, independent owners and native disk/network persistence.
+- Add a non-cancellable `ArmorStatsEvent` on the NeoForge game bus for global addon calculations without installing material traits. Keep gameplay triggers and progression rules in addons.
+- Validate non-finite stats before defense rounding so invalid addon results cannot silently turn into zero or partially update an item.
+- Document Java/KubeJS access, state ownership, stat-event purity, native damage/tooltip events and slot removal behavior in English and Chinese.
+- Build and resource audit passed. Dedicated-server verification passed 359 checks without KubeJS and 374 with the supplied KubeJS scripts. TinkersNirvana remains at 1.21.1-1.0.2.
+
 ## 1.21.1-1.0.3
 
 - Prevent the inherited screen background pass from blurring the already-rendered Armory book and leave the world background clear, matching the original book.

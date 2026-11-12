@@ -2,7 +2,7 @@
 
 An LGPL-3.0-or-later port of **AntiqueArmory / Construct's Armory** for **Minecraft 1.21.1**, **NeoForge 21.1.265+** and **TinkersNirvana 1.21.1-1.0.2+**. The mod ID and content namespace are `conarm`.
 
-[简体中文](README.zh-CN.md) · [Developer API](docs/en/API.md) · [KubeJS](docs/en/KUBEJS.md) · [Configuration](docs/en/CONFIGURATION.md) · [Material table](docs/MATERIALS.md) · [Verification](docs/VERIFICATION.md) · [License and credits](NOTICE.md)
+[简体中文](README.zh-CN.md) · [Developer API](docs/en/API.md) · [Addon state and slots](docs/en/EXTENSIONS.md) · [KubeJS](docs/en/KUBEJS.md) · [Configuration](docs/en/CONFIGURATION.md) · [Material table](docs/MATERIALS.md) · [Verification](docs/VERIFICATION.md) · [License and credits](NOTICE.md)
 
 The port includes four modular armor pieces, seven material-dependent parts, the original thirty armor-material stat sets, material traits, armor modifiers, polishing, embossment, repair, part replacement, armor stations/forges, smeltery casting and traveller accessories. Broken armor remains available for repair. Knapsack, potion-belt and hotbar-belt contents stay on the owning armor item. Original armor/accessory geometry and sprites are used by the modern rendering implementation.
 
@@ -12,7 +12,7 @@ Install Java 21, Minecraft 1.21.1 and NeoForge 21.1.265 or newer within the 21.1
 
 KubeJS is optional. The integration is verified against `kubejs-neoforge:2101.7.2-build.381` and its declared dependencies. Install matching startup scripts on both the client and server. The mod also loads without KubeJS.
 
-JEI integration is deferred: the supplied TinkersNirvana port has no implemented JEI integration. The manual and native recipes remain available. Legacy CraftTweaker/ContentTweaker scripting is replaced by the Java and KubeJS APIs described below. Native armor leveling is configurable and disabled by default, matching the original mod without its optional Tool Leveling dependency.
+JEI integration is deferred: the supplied TinkersNirvana port has no implemented JEI integration. The manual and native recipes remain available. Legacy CraftTweaker/ContentTweaker scripting is replaced by the Java and KubeJS APIs described below. Armor progression is provided by addons through the [extension API](docs/en/EXTENSIONS.md). This mod supplies no experience gain, level curve, level rewards or leveling configuration.
 
 ## Playing
 

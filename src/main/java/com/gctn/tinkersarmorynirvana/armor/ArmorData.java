@@ -23,7 +23,11 @@ public final class ArmorData {
     private static final int[] DURABILITY = {13, 15, 16, 11};
     private ArmorData() {}
     public static CompoundTag read(ItemStack stack) { return stack.getOrDefault(ArmoryContent.ARMOR_DATA.get(), CustomData.EMPTY).copyTag(); }
-    public static void write(ItemStack stack, CompoundTag tag) { stack.set(ArmoryContent.ARMOR_DATA.get(), CustomData.of(tag)); }
+    public static void write(ItemStack stack, CompoundTag tag) {
+        // 只移除废弃内置升级的根字段；附属 Extensions/Data 内的同名数据由各自所有者管理。
+        var data = tag.copy(); data.remove("Level"); data.remove("Experience");
+        stack.set(ArmoryContent.ARMOR_DATA.get(), CustomData.of(data));
+    }
     public static boolean initialized(ItemStack stack) { return stack.getItem() instanceof ModularArmorItem && read(stack).contains("Core"); }
     public static boolean broken(ItemStack stack) {
         if (!initialized(stack) || stack.getDamageValue() >= stack.getMaxDamage()) { return true; }
@@ -123,15 +127,17 @@ public final class ArmorData {
                 + Math.round(trim.trimDurability * DURABILITY[index])) * plates.plateMultiplier)
                 + Math.round(plates.plateDurability * DURABILITY[index]));
         ArmorStats stats = new ArmorStats(durability, core.defense, plates.toughness);
-        stats.modifiers = com.gctn.tinkersarmorynirvana.ArmoryConfig.startingSlots()
-                + (com.gctn.tinkersarmorynirvana.ArmoryConfig.leveling() ? tag.getInt("Level") : 0);
+        stats.modifiers += ArmorExtensions.totalModifierSlots(stack);
         invoke(stack, null, "modifyStats", null, 0, stats);
         if (tag.contains("Polished")) {
             var polish = ArmoryRegistry.material(tag.getString("Polished"));
             if (polish != null) { stats.toughness = polish.toughness; }
         }
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new ArmorStatsEvent(stack, stats));
+        // 先拒绝 NaN 等非法附属结果；Math.round(NaN) 会变成 0，不能在取整之后才检查。
+        stats.validate();
         stats.defense = Math.round(stats.defense * (allocateDefense ? DEFENSE[index] : 1) * 100) / 100F;
-        stats.validate(); return stats;
+        return stats;
     }
 
     public static int usedSlots(ItemStack stack) {
@@ -143,6 +149,8 @@ public final class ArmorData {
 
     public static void rebuild(ItemStack stack) {
         if (!initialized(stack)) { return; }
+        var stored = read(stack);
+        if (stored.contains("Level") || stored.contains("Experience")) { write(stack, stored); }
         int damage = stack.getDamageValue();
         ArmorStats stats = stats(stack);
         stack.set(DataComponents.MAX_DAMAGE, stats.durability);

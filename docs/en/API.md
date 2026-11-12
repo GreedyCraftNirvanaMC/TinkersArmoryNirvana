@@ -17,7 +17,7 @@ side = "BOTH"
 [[dependencies.exampleaddon]]
 modId = "conarm"
 type = "required"
-versionRange = "[1.21.1-1.0.2,)"
+versionRange = "[1.21.1-1.0.4,)"
 ordering = "AFTER"
 side = "BOTH"
 ```
@@ -25,7 +25,7 @@ side = "BOTH"
 ```groovy
 dependencies {
     implementation files('libs/TinkersNirvana-1.21.1-1.0.2.jar')
-    implementation files('libs/TinkersArmoryNirvana-1.21.1-1.0.2.jar')
+    implementation files('libs/TinkersArmoryNirvana-1.21.1-1.0.4.jar')
 }
 ```
 
@@ -119,11 +119,17 @@ State changes require `ctx.save()`. It merges that definition's state into the l
 
 `ArmorData.create(ModularArmorItem, core, plates, trim)` builds initialized armor. `ArmorPartItem.create(material)` creates a material-tagged part. `ArmoryContent.ARMORS` and `PARTS` expose builtin suppliers. Only the four humanoid armor slots are supported by builtin assembly.
 
-`ArmorData.read(stack)` returns a copy of the persistent `conarm:armor` component. It stores `Version`, `Core`, `Plates`, `Trim`, `Modifiers` (ID → integer points), `State` (ID → compound), `Disabled`, optional `Polished`, `EmbossedTraits`, repair count and leveling data. Write back through `ArmorData.write`. Never edit another stack's preview or shared component in place.
+`ArmorData.read(stack)` returns a copy of the persistent `conarm:armor` component. It stores `Version`, `Core`, `Plates`, `Trim`, `Modifiers` (ID → integer points), `State` (ID → compound), `Disabled`, optional `Polished`, `EmbossedTraits`, repair count and namespaced `Extensions` entries. Write back through `ArmorData.write`. Never edit another stack's preview or shared component in place.
 
 `ArmorStorage` handles the separate `conarm:storage` component. It stores `Inventories` for `travel_sack`, `potion_belt` and `travel_belt`, with numbered slots containing Minecraft's registry-aware item serialization. Separating storage keeps normal stat lookups from copying a full backpack. Both components persist and synchronize using native component codecs.
 
 Use `ArmorData.rebuild`, `damage`, `repair`, `level`, `points`, `freeSlots`, `traits` and `broken` rather than duplicating their logic. Broken equipment loses its native attributes and active abilities while its stack and storage remain intact. Repair restores protection. Native anvil naming is allowed; ordinary enchanting, two-item anvil repair and vanilla repair-item recipes are disabled. This preserves the mod's workshop-based progression and avoids consuming armor containing a backpack.
+
+## Addon state and global stat calculations
+
+Since 1.21.1-1.0.4, `ArmorExtensions.read/write/update/remove` manage a namespaced owner's independent compound, and `modifierSlots/setModifierSlots/totalModifierSlots` expose passive slot contributions. Mutations validate a rebuilt copy before committing all components, preserve other owners, and rebuild immediately. The base slot count remains three before traits/modifiers and addon contributions.
+
+`ArmorStatsEvent` runs on `NeoForge.EVENT_BUS` after builtin calculations, before native defense allocation and validation. Its armor is an independent snapshot; only its mutable `ArmorStats` result affects calculation. Use native NeoForge gameplay events for damage/XP triggers. The core has no experience/leveling engine or level tooltip. Old root `Level` and `Experience` fields are discarded on write/rebuild; nested addon fields are unaffected. See the complete [extension guide](EXTENSIONS.md) for API contracts and examples.
 
 ## Custom workshop operations
 

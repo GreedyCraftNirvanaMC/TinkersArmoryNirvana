@@ -9,11 +9,11 @@
 ```groovy
 dependencies {
     implementation files('libs/TinkersNirvana-1.21.1-1.0.2.jar')
-    implementation files('libs/TinkersArmoryNirvana-1.21.1-1.0.2.jar')
+    implementation files('libs/TinkersArmoryNirvana-1.21.1-1.0.4.jar')
 }
 ```
 
-在附属的 `neoforge.mods.toml` 中分别声明 `tconstruct` 和 `conarm` 必需依赖，`ordering="AFTER"`、`side="BOTH"`，最低版本分别为 `1.21.1-1.0.2` 与 `1.21.1-1.0.2`。完整 TOML 示例见英文参考对应章节。
+在附属的 `neoforge.mods.toml` 中分别声明 `tconstruct` 和 `conarm` 必需依赖，`ordering="AFTER"`、`side="BOTH"`，最低版本分别为 `1.21.1-1.0.2` 与 `1.21.1-1.0.4`。完整 TOML 示例见英文参考对应章节。
 
 普通定义注册放进 `FMLCommonSetupEvent.enqueueWork`，在两个依赖完成注册之后执行。KubeJS 的修改事件在之后的插件 `afterInit` 阶段触发，因此整合包可以调整 Java 附属注册的内容。不要从异步线程修改全局定义表。纯 Java 附属不必依赖 KubeJS。
 
@@ -121,6 +121,12 @@ ArmoryRegistry.registerModifier(new ArmorModifier("exampleaddon:amethyst_guard")
 `ArmorStorage` 单独管理 `conarm:storage`。其 `Inventories` 下分别保存 `travel_sack`、`potion_belt`、`travel_belt`，编号槽位使用 Minecraft 原生带注册表的 ItemStack 序列化。将库存分开可以避免频繁属性计算复制整个背包。两个组件都通过原生编码器保存与同步。
 
 通过 `ArmorData.rebuild/damage/repair/level/points/freeSlots/traits/broken` 操作装备，不要重复实现伤害逻辑。损坏装备停止提供属性与主动能力，但保留物品和库存；修复后恢复。支持铁砧命名，关闭普通附魔、双装备铁砧修复和原版双物品修复配方，以维持工作台强化流程并避免吞掉带库存的护甲。
+
+## 附属数据与全局属性计算
+
+自 1.21.1-1.0.4 起，`ArmorExtensions.read/write/update/remove` 管理完整命名空间下的独立数据，`modifierSlots/setModifierSlots/totalModifierSlots` 提供被动强化槽贡献。写操作先在副本上重算并校验，成功后提交组件，保留其他附属数据并立即更新属性。基础强化槽为三，再计入词条／强化和附属贡献。
+
+`ArmorStatsEvent` 在 `NeoForge.EVENT_BUS` 上触发，时机为内置计算之后、防御按部位分配及最终校验之前。装备对象是独立快照，只有可修改的 `ArmorStats` 影响结果。伤害／经验触发使用 NeoForge 原生游戏事件；本体没有经验升级引擎和等级提示。旧根字段 `Level`、`Experience` 会在写入或重算时删除，附属命名空间内部的同名字段不受影响。完整契约和示例见[扩展指南](EXTENSIONS.md)。
 
 ## 新工作台操作
 
