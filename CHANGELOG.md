@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.21.1-1.0.11
+
+- Replace the project logo with a pixel-art armor illustration matching the supplied TinkersNirvana logo's blackstone background, gold frame and cyan accents. Limit the packaged image to 512 × 512 pixels; mod-list and README references use the replacement automatically.
+
 ## 1.21.1-1.0.10
 
 - Add an original transparent pixel-art armor emblem and use it in NeoForge mod metadata and both README files. Gameplay is unchanged.
